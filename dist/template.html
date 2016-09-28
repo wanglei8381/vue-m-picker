@@ -1,0 +1,10 @@
+<div class="m-picker">
+  <div class="m-picker-inner">
+    <div class="m-picker-rule"></div>
+    <ul class="m-picker-list">
+      <li v-for="item of list"
+          :style="{transform: 'rotateX(' + (-20 * $index) +'deg) translateZ(90px)'}">{{item[label]}}
+      </li>
+    </ul>
+  </div>
+</div>
