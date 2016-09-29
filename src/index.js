@@ -1,4 +1,4 @@
-require('./style.styl');
+require('./style.css');
 
 let Touch = require('super-touch');
 module.exports = {
