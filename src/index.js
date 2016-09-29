@@ -45,7 +45,7 @@ module.exports = {
                 this.$list[val].classList.add('highlight');
             }
             if (this.$container) {
-                this.$container.style.transform = 'rotateX(' + this.distinct + 'deg)';
+                this.$container.style.webkitTransform = 'rotateX(' + this.distinct + 'deg)';
             }
         }
     },
@@ -91,7 +91,7 @@ module.exports = {
                 this.curIdx = idx;
             }
 
-            this.$container.style.transform = 'rotateX(' + distinct + 'deg)';
+            this.$container.style.webkitTransform = 'rotateX(' + distinct + 'deg)';
             this.distinct = distinct;
             this.showCal();
         },
@@ -109,7 +109,7 @@ module.exports = {
             this.$list = this.$container.querySelectorAll('li');
             this.$list[this.curIdx].classList.add('highlight');
             this.showCal();
-            this.$container.style.transform = 'rotateX(' + this.distinct + 'deg)';
+            this.$container.style.webkitTransform = 'rotateX(' + this.distinct + 'deg)';
             this.$container.addEventListener("webkitTransitionEnd", ()=> {
                 this.$container.style.webkitTransition = null;
             });
