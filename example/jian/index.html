@@ -13,7 +13,7 @@
 <body>
 <div id="mod-container">
   <div class="choose-result">
-    <button class="btn" @click.stop="choose">选择省市区</button>
+    <button class="btn" @click.stop="choose">选择</button>
     <p class="choose-result-cnt">选中了:{{message}}</p>
   </div>
 
@@ -23,7 +23,7 @@
       <button class="btn btn-confirm" @click="confirm">确定</button>
     </div>
     <div>
-      <picker :list="list" :cur-idx="curIdx"></picker>
+      <picker :list="list" :cur-idx="curIdx" @picker="result"></picker>
     </div>
   </div>
 </div>

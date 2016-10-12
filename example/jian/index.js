@@ -16,8 +16,8 @@ new Vue({
             ],
             curIdx: 1,
             message: '',
-            open: false,
-            isWatch: false
+            picker: {},
+            open: false
         };
     },
     methods: {
@@ -29,15 +29,17 @@ new Vue({
         },
         confirm: function () {
             this.open = false;
-            this.message = this.province.name + '/' + this.city.name + '/' + this.area.name;
+            this.message = this.picker.label;
+        },
+        result(item, index){
+            console.log(item, index);
+            this.picker = item;
         }
     },
-    ready(){
+    mounted(){
+        // this.curIdx=2;
         window.addEventListener('click', ()=> {
             this.open = false;
-        });
-        this.$nextTick(()=> {
-            this.isWatch = true;
         });
     }
 });

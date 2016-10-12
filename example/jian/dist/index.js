@@ -66,8 +66,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            list: [{ label: '语文', value: '1' }, { label: '数学', value: '1' }, { label: '英语', value: '1' }, { label: '历史', value: '1' }, { label: '政治', value: '1' }, { label: 'css', value: '1' }, { label: '几何', value: '1' }],
 	            curIdx: 1,
 	            message: '',
-	            open: false,
-	            isWatch: false
+	            picker: {},
+	            open: false
 	        };
 	    },
 	    methods: {
@@ -79,17 +79,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	        },
 	        confirm: function confirm() {
 	            this.open = false;
-	            this.message = this.province.name + '/' + this.city.name + '/' + this.area.name;
+	            this.message = this.picker.label;
+	        },
+	        result: function result(item, index) {
+	            console.log(item, index);
+	            this.picker = item;
 	        }
 	    },
-	    ready: function ready() {
+	    mounted: function mounted() {
 	        var _this = this;
 	
+	        // this.curIdx=2;
 	        window.addEventListener('click', function () {
 	            _this.open = false;
-	        });
-	        this.$nextTick(function () {
-	            _this.isWatch = true;
 	        });
 	    }
 	});
@@ -7977,7 +7979,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    data: function data() {
 	        return {
 	            distinct: 0,
-	            speed: 0.5
+	            speed: 0.5,
+	            curIndex: 0
 	        };
 	    },
 	
@@ -8005,6 +8008,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    watch: {
 	        list: 'reload',
 	        curIdx: function curIdx(val, oval) {
+	            this.curIndex = val;
 	            this.distinct = val * 20;
 	            //当下标变化时,自动滚动到指定位置
 	            if (this.$list) {
@@ -8031,8 +8035,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var distinct = this.distinct;
 	            this.internalCal(distinct, true);
 	            this.$container.style.webkitTransition = '100ms ease-out';
-	            // this.picker = this.list[this.curIdx];
-	            console.log(JSON.stringify(this.list[this.curIdx]));
+	            this.$emit('picker', JSON.parse(JSON.stringify(this.list[this.curIndex])), this.curIndex);
 	        },
 	        internalCal: function internalCal(distinct, isEnd) {
 	            var baseNum = isEnd ? -0 : 20;
@@ -8054,9 +8057,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (distinct >= 0 && distinct <= this.maxVal) {
 	                //选中的下表
 	                var idx = interval / 20;
-	                this.$list[this.curIdx].classList.remove('highlight');
+	                this.$list[this.curIndex].classList.remove('highlight');
 	                this.$list[idx].classList.add('highlight');
-	                this.curIdx = idx;
+	                this.curIndex = idx;
 	            }
 	
 	            this.$container.style.webkitTransform = 'rotateX(' + distinct + 'deg)';
@@ -8065,8 +8068,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        },
 	        showCal: function showCal() {
 	            if (this.list.length <= 15) return;
-	            var min = this.curIdx - 5;
-	            var max = this.curIdx + 5;
+	            var min = this.curIndex - 5;
+	            var max = this.curIndex + 5;
 	            for (var i = 0, len = this.list.length; i < len; i++) {
 	                this.$list[i].style.visibility = i >= min && i <= max ? 'visible' : 'hidden';
 	            }
@@ -8077,7 +8080,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            //当数据变化时,重新加载数据
 	            this.$container = this.$el.querySelector('.m-picker-list');
 	            this.$list = this.$container.querySelectorAll('li');
-	            this.$list[this.curIdx].classList.add('highlight');
+	            this.$list[this.curIndex].classList.add('highlight');
+	            this.distinct = this.curIndex * 20;
 	            this.showCal();
 	            this.$container.style.webkitTransform = 'rotateX(' + this.distinct + 'deg)';
 	            this.$container.addEventListener("webkitTransitionEnd", function () {
@@ -8095,6 +8099,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    ready: function ready() {
 	        var _this3 = this;
 	
+	        this.curIndex = this.curIdx;
 	        if (this.list.length > 0) {
 	            this.reload();
 	        }
@@ -8112,7 +8117,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        touch.on('touch:end', function (res) {
 	            res.e.preventDefault();
-	            _this3.end(res);
+	            _this3.end();
+	            //this.distinct += this.distinct * Math.abs(res.y1 - res.y2) / res.spend;
 	        });
 	    }
 	};
