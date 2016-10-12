@@ -1,4 +1,4 @@
-#vue-pullrefresh
+#vue-m-picker
  <h5>基于vue的移动端选择工具</h5>
 ##Install
 npm install vue-m-picker

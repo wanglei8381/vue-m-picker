@@ -14,11 +14,6 @@ module.exports = {
             type: Array,
             required: true
         },
-        picker: {
-            type: Object,
-            required: true,
-            twoWay: true
-        },
         label: {
             type: String,
             required: false,
@@ -64,7 +59,8 @@ module.exports = {
             let distinct = this.distinct;
             this.internalCal(distinct, true);
             this.$container.style.webkitTransition = '100ms ease-out';
-            this.picker = this.list[this.curIdx];
+            // this.picker = this.list[this.curIdx];
+            console.log(JSON.stringify(this.list[this.curIdx]));
         },
         internalCal(distinct, isEnd){
             let baseNum = isEnd ? -0 : 20;
@@ -114,6 +110,11 @@ module.exports = {
                 this.$container.style.webkitTransition = null;
             });
         }
+    },
+    mounted() {
+        this.$nextTick(()=> {
+            this.$options.ready.call(this);
+        })
     },
     ready(){
         if (this.list.length > 0) {

@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "super-touch": "^0.0.4",
-    "vue": "^1.0.24"
+    "vue": "^2.0.2"
   },
   "devDependencies": {
     "babel-core": "^6.9.0",

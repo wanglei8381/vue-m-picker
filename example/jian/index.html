@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="referrer" content="always">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+  <title>简单例子</title>
+</head>
+<body>
+<div id="mod-container">
+  <div class="choose-result">
+    <button class="btn" @click.stop="choose">选择省市区</button>
+    <p class="choose-result-cnt">选中了:{{message}}</p>
+  </div>
+
+  <div class="picker-wrapper" @click.stop :class="{'open':open}">
+    <div class="picker-action">
+      <button class="btn btn-cancle" @click="cancle">取消</button>
+      <button class="btn btn-confirm" @click="confirm">确定</button>
+    </div>
+    <div>
+      <picker :list="list" :cur-idx="curIdx"></picker>
+    </div>
+  </div>
+</div>
+<script src="dist/index.js"></script>
+</body>
+</html>
