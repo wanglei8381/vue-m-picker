@@ -108,6 +108,7 @@ module.exports = {
             this.$container = this.$el.querySelector('.m-picker-list');
             this.$list = this.$container.querySelectorAll('li');
             this.$list[this.curIdx].classList.add('highlight');
+            this.distinct = this.curIdx * 20;
             this.showCal();
             this.$container.style.webkitTransform = 'rotateX(' + this.distinct + 'deg)';
             this.$container.addEventListener("webkitTransitionEnd", ()=> {
