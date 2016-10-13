@@ -1,6 +1,6 @@
 {
   "name": "vue-m-picker",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "移动端选择工具",
   "license": "MIT",
   "main": "index.js",
@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "super-touch": "^0.0.4",
-    "vue": "^1.0.24"
+    "vue": "^2.0.2"
   },
   "devDependencies": {
     "babel-core": "^6.9.0",
