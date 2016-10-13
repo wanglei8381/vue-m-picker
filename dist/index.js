@@ -1,6 +1,6 @@
 'use strict';
 
-require('./style.styl');
+require('./style.css');
 
 var Touch = require('super-touch');
 module.exports = {
@@ -8,7 +8,8 @@ module.exports = {
     data: function data() {
         return {
             distinct: 0,
-            speed: 0.5
+            speed: 0.5,
+            curIndex: 0
         };
     },
 
@@ -16,11 +17,6 @@ module.exports = {
         list: {
             type: Array,
             required: true
-        },
-        picker: {
-            type: Object,
-            required: true,
-            twoWay: true
         },
         label: {
             type: String,
@@ -41,6 +37,7 @@ module.exports = {
     watch: {
         list: 'reload',
         curIdx: function curIdx(val, oval) {
+            this.curIndex = val;
             this.distinct = val * 20;
             //当下标变化时,自动滚动到指定位置
             if (this.$list) {
@@ -67,7 +64,7 @@ module.exports = {
             var distinct = this.distinct;
             this.internalCal(distinct, true);
             this.$container.style.webkitTransition = '100ms ease-out';
-            this.picker = this.list[this.curIdx];
+            this.$emit('picker', JSON.parse(JSON.stringify(this.list[this.curIndex])), this.curIndex);
         },
         internalCal: function internalCal(distinct, isEnd) {
             var baseNum = isEnd ? -0 : 20;
@@ -89,9 +86,9 @@ module.exports = {
             if (distinct >= 0 && distinct <= this.maxVal) {
                 //选中的下表
                 var idx = interval / 20;
-                this.$list[this.curIdx].classList.remove('highlight');
+                this.$list[this.curIndex].classList.remove('highlight');
                 this.$list[idx].classList.add('highlight');
-                this.curIdx = idx;
+                this.curIndex = idx;
             }
 
             this.$container.style.webkitTransform = 'rotateX(' + distinct + 'deg)';
@@ -100,8 +97,8 @@ module.exports = {
         },
         showCal: function showCal() {
             if (this.list.length <= 15) return;
-            var min = this.curIdx - 5;
-            var max = this.curIdx + 5;
+            var min = this.curIndex - 5;
+            var max = this.curIndex + 5;
             for (var i = 0, len = this.list.length; i < len; i++) {
                 this.$list[i].style.visibility = i >= min && i <= max ? 'visible' : 'hidden';
             }
@@ -112,7 +109,8 @@ module.exports = {
             //当数据变化时,重新加载数据
             this.$container = this.$el.querySelector('.m-picker-list');
             this.$list = this.$container.querySelectorAll('li');
-            this.$list[this.curIdx].classList.add('highlight');
+            this.$list[this.curIndex].classList.add('highlight');
+            this.distinct = this.curIndex * 20;
             this.showCal();
             this.$container.style.webkitTransform = 'rotateX(' + this.distinct + 'deg)';
             this.$container.addEventListener("webkitTransitionEnd", function () {
@@ -120,9 +118,17 @@ module.exports = {
             });
         }
     },
-    ready: function ready() {
+    mounted: function mounted() {
         var _this2 = this;
 
+        this.$nextTick(function () {
+            _this2.$options.ready.call(_this2);
+        });
+    },
+    ready: function ready() {
+        var _this3 = this;
+
+        this.curIndex = this.curIdx;
         if (this.list.length > 0) {
             this.reload();
         }
@@ -135,12 +141,13 @@ module.exports = {
 
         touch.on('touch:move', function (res) {
             res.e.preventDefault();
-            _this2.move(res);
+            _this3.move(res);
         });
 
         touch.on('touch:end', function (res) {
             res.e.preventDefault();
-            _this2.end(res);
+            _this3.end();
+            //this.distinct += this.distinct * Math.abs(res.y1 - res.y2) / res.spend;
         });
     }
 };
