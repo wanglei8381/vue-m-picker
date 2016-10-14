@@ -1,13 +1,16 @@
 require('./style.css');
 
 let Touch = require('super-touch');
+let quart = require('super-animation').quart;
+let animate = require('super-animation').animate;
 module.exports = {
     template: require('./template.html'),
     data(){
         return {
             distinct: 0,
             speed: 0.5,
-            curIndex: 0
+            curIndex: 0,
+            animatePause: true
         }
     },
     props: {
@@ -55,16 +58,16 @@ module.exports = {
         move(res){
             let distinct = this.distinct;
             distinct += res.yrange * this.speed;
-            this.internalCal(distinct);
+            this.distinct = this.internalCal(distinct);
         },
         end(){
             let distinct = this.distinct;
-            this.internalCal(distinct, true);
+            this.distinct = this.internalCal(distinct, true);
             this.$container.style.webkitTransition = '100ms ease-out';
             this.$emit('picker', JSON.parse(JSON.stringify(this.list[this.curIndex])), this.curIndex);
         },
         internalCal(distinct, isEnd){
-            let baseNum = isEnd ? -0 : 20;
+            let baseNum = isEnd ? -0 : 40;
             if (distinct > this.maxVal + baseNum) {
                 distinct = this.maxVal + baseNum;
             }
@@ -89,8 +92,8 @@ module.exports = {
             }
 
             this.$container.style.webkitTransform = 'rotateX(' + distinct + 'deg)';
-            this.distinct = distinct;
             this.showCal();
+            return distinct;
         },
         showCal(){
             if (this.list.length <= 15) return;
@@ -99,6 +102,36 @@ module.exports = {
             for (let i = 0, len = this.list.length; i < len; i++) {
                 this.$list[i].style.visibility = (i >= min && i <= max ? 'visible' : 'hidden');
             }
+        },
+        startInertiaScroll(res){
+            //缓动
+            var v = (res.y1 - res.y2) / res.spend;
+            var dire = v > 0 ? 1 : -1;
+            var duration = Math.abs(v / 0.0006);//速度减到0
+            var dist = v * duration / 2;//最后执行的距离
+            var start = this.distinct;
+            var end = this.distinct + dist;
+            console.log(start, end, dist, duration);
+            var maxVal = this.maxVal + 40;
+            var index = 0, r = 0, _distinct = start;
+            duration /= 5;
+            var _inertiaMove = ()=> {
+                if (this.animatePause) return;
+                r = quart.easeOut(index++, start, end, duration);
+                if (dire === -1) {
+                    r = 2 * start - r;
+                }
+                console.log(r);
+                _distinct = this.internalCal(r);
+                if (index < duration && r > -40 && r < maxVal) {
+                    requestAnimationFrame(_inertiaMove);
+                } else {
+                    this.animatePause = true;
+                    this.distinct = _distinct;
+                    this.end();
+                }
+            }
+            _inertiaMove();
         },
         reload() {
             //当数据变化时,重新加载数据
@@ -128,6 +161,8 @@ module.exports = {
         var touch = new Touch(this.$el);
         touch.start();
         touch.on('touch:start', (res)=> {
+            //暂停执行缓动
+            this.animatePause = true;
             res.e.preventDefault();
         });
 
@@ -138,8 +173,13 @@ module.exports = {
 
         touch.on('touch:end', (res)=> {
             res.e.preventDefault();
-            this.end();
-            //this.distinct += this.distinct * Math.abs(res.y1 - res.y2) / res.spend;
+            if (Math.abs(res.y1 - res.y2) < 20) {
+                this.end();
+            } else {
+                this.animatePause = false;
+                this.startInertiaScroll(res);
+            }
+
         });
     }
 };

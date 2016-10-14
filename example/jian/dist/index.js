@@ -63,7 +63,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    el: '#mod-container',
 	    data: function data() {
 	        return {
-	            list: [{ label: '语文', value: '1' }, { label: '数学', value: '1' }, { label: '英语', value: '1' }, { label: '历史', value: '1' }, { label: '政治', value: '1' }, { label: 'css', value: '1' }, { label: '几何', value: '1' }],
+	            list: [{ label: '语文', value: '1' }, { label: '数学', value: '1' }, { label: '英语', value: '1' }, { label: '历史', value: '1' }, { label: '政治', value: '1' }, { label: 'css', value: '1' }, { label: '几何', value: '1' }, { label: '语文', value: '1' }, { label: '数学', value: '1' }, { label: '英语', value: '1' }, { label: '历史', value: '1' }, { label: '政治', value: '1' }, { label: 'css', value: '1' }, { label: '几何', value: '1' }],
 	            curIdx: 1,
 	            message: '',
 	            picker: {},
@@ -7974,13 +7974,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	__webpack_require__(7);
 	
 	var Touch = __webpack_require__(9);
+	var quart = __webpack_require__(12).quart;
+	var animate = __webpack_require__(12).animate;
 	module.exports = {
-	    template: __webpack_require__(12),
+	    template: __webpack_require__(15),
 	    data: function data() {
 	        return {
 	            distinct: 0,
 	            speed: 0.5,
-	            curIndex: 0
+	            curIndex: 0,
+	            animatePause: true
 	        };
 	    },
 	
@@ -8029,16 +8032,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        move: function move(res) {
 	            var distinct = this.distinct;
 	            distinct += res.yrange * this.speed;
-	            this.internalCal(distinct);
+	            this.distinct = this.internalCal(distinct);
 	        },
 	        end: function end() {
 	            var distinct = this.distinct;
-	            this.internalCal(distinct, true);
+	            this.distinct = this.internalCal(distinct, true);
 	            this.$container.style.webkitTransition = '100ms ease-out';
 	            this.$emit('picker', JSON.parse(JSON.stringify(this.list[this.curIndex])), this.curIndex);
 	        },
 	        internalCal: function internalCal(distinct, isEnd) {
-	            var baseNum = isEnd ? -0 : 20;
+	            var baseNum = isEnd ? -0 : 40;
 	            if (distinct > this.maxVal + baseNum) {
 	                distinct = this.maxVal + baseNum;
 	            }
@@ -8063,8 +8066,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	
 	            this.$container.style.webkitTransform = 'rotateX(' + distinct + 'deg)';
-	            this.distinct = distinct;
 	            this.showCal();
+	            return distinct;
 	        },
 	        showCal: function showCal() {
 	            if (this.list.length <= 15) return;
@@ -8074,8 +8077,42 @@ return /******/ (function(modules) { // webpackBootstrap
 	                this.$list[i].style.visibility = i >= min && i <= max ? 'visible' : 'hidden';
 	            }
 	        },
-	        reload: function reload() {
+	        startInertiaScroll: function startInertiaScroll(res) {
 	            var _this = this;
+	
+	            //缓动
+	            var v = (res.y1 - res.y2) / res.spend;
+	            var dire = v > 0 ? 1 : -1;
+	            var duration = Math.abs(v / 0.0006); //速度减到0
+	            var dist = v * duration / 2; //最后执行的距离
+	            var start = this.distinct;
+	            var end = this.distinct + dist;
+	            console.log(start, end, dist, duration);
+	            var maxVal = this.maxVal + 40;
+	            var index = 0,
+	                r = 0,
+	                _distinct = start;
+	            duration /= 5;
+	            var _inertiaMove = function _inertiaMove() {
+	                if (_this.animatePause) return;
+	                r = quart.easeOut(index++, start, end, duration);
+	                if (dire === -1) {
+	                    r = 2 * start - r;
+	                }
+	                console.log(r);
+	                _distinct = _this.internalCal(r);
+	                if (index < duration && r > -40 && r < maxVal) {
+	                    requestAnimationFrame(_inertiaMove);
+	                } else {
+	                    _this.animatePause = true;
+	                    _this.distinct = _distinct;
+	                    _this.end();
+	                }
+	            };
+	            _inertiaMove();
+	        },
+	        reload: function reload() {
+	            var _this2 = this;
 	
 	            //当数据变化时,重新加载数据
 	            this.$container = this.$el.querySelector('.m-picker-list');
@@ -8085,19 +8122,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.showCal();
 	            this.$container.style.webkitTransform = 'rotateX(' + this.distinct + 'deg)';
 	            this.$container.addEventListener("webkitTransitionEnd", function () {
-	                _this.$container.style.webkitTransition = null;
+	                _this2.$container.style.webkitTransition = null;
 	            });
 	        }
 	    },
 	    mounted: function mounted() {
-	        var _this2 = this;
+	        var _this3 = this;
 	
 	        this.$nextTick(function () {
-	            _this2.$options.ready.call(_this2);
+	            _this3.$options.ready.call(_this3);
 	        });
 	    },
 	    ready: function ready() {
-	        var _this3 = this;
+	        var _this4 = this;
 	
 	        this.curIndex = this.curIdx;
 	        if (this.list.length > 0) {
@@ -8107,18 +8144,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var touch = new Touch(this.$el);
 	        touch.start();
 	        touch.on('touch:start', function (res) {
+	            //暂停执行缓动
+	            _this4.animatePause = true;
 	            res.e.preventDefault();
 	        });
 	
 	        touch.on('touch:move', function (res) {
 	            res.e.preventDefault();
-	            _this3.move(res);
+	            _this4.move(res);
 	        });
 	
 	        touch.on('touch:end', function (res) {
 	            res.e.preventDefault();
-	            _this3.end();
-	            //this.distinct += this.distinct * Math.abs(res.y1 - res.y2) / res.spend;
+	            if (Math.abs(res.y1 - res.y2) < 20) {
+	                _this4.end();
+	            } else {
+	                _this4.animatePause = false;
+	                _this4.startInertiaScroll(res);
+	            }
 	        });
 	    }
 	};
@@ -8539,6 +8582,242 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var $ = module.exports = __webpack_require__(13);
+	$.animate = __webpack_require__(14);
+
+/***/ },
+/* 13 */
+/***/ function(module, exports) {
+
+	/*
+	 * 常用动画算法,借用张鑫旭的Tween.js,
+	 *
+	 * linear：无缓动效果
+	 * quadratic：二次方的缓动（t^2）
+	 * cubic：三次方的缓动（t^3）
+	 * quartic：四次方的缓动（t^4）
+	 * quintic：五次方的缓动（t^5）
+	 * Sinusoidal：正弦曲线的缓动（sin(t)）
+	 * Exponential：指数曲线的缓动（2^t）
+	 * Circular：圆形曲线的缓动（sqrt(1-t^2)）
+	 * elastic：指数衰减的正弦曲线缓动
+	 * 超过范围的三次方缓动（(s+1)*t^3 – s*t^2）
+	 * 指数衰减的反弹缓动
+	 *
+	 * t: current time（当前时间）
+	 * b: beginning value（初始值）
+	 * c: change in value（变化量）
+	 * d: duration（持续时间）
+	 */
+	var Tween = {
+	    linear: function (t, b, c, d) {
+	        return c * t / d + b;
+	    },
+	    quad: {
+	        easeIn: function (t, b, c, d) {
+	            return c * (t /= d) * t + b;
+	        },
+	        easeOut: function (t, b, c, d) {
+	            return -c * (t /= d) * (t - 2) + b;
+	        },
+	        easeInOut: function (t, b, c, d) {
+	            if ((t /= d / 2) < 1) return c / 2 * t * t + b;
+	            return -c / 2 * ((--t) * (t - 2) - 1) + b;
+	        }
+	    },
+	    cubic: {
+	        easeIn: function (t, b, c, d) {
+	            return c * (t /= d) * t * t + b;
+	        },
+	        easeOut: function (t, b, c, d) {
+	            return c * ((t = t / d - 1) * t * t + 1) + b;
+	        },
+	        easeInOut: function (t, b, c, d) {
+	            if ((t /= d / 2) < 1) return c / 2 * t * t * t + b;
+	            return c / 2 * ((t -= 2) * t * t + 2) + b;
+	        }
+	    },
+	    quart: {
+	        easeIn: function (t, b, c, d) {
+	            return c * (t /= d) * t * t * t + b;
+	        },
+	        easeOut: function (t, b, c, d) {
+	            return -c * ((t = t / d - 1) * t * t * t - 1) + b;
+	        },
+	        easeInOut: function (t, b, c, d) {
+	            if ((t /= d / 2) < 1) return c / 2 * t * t * t * t + b;
+	            return -c / 2 * ((t -= 2) * t * t * t - 2) + b;
+	        }
+	    },
+	    quint: {
+	        easeIn: function (t, b, c, d) {
+	            return c * (t /= d) * t * t * t * t + b;
+	        },
+	        easeOut: function (t, b, c, d) {
+	            return c * ((t = t / d - 1) * t * t * t * t + 1) + b;
+	        },
+	        easeInOut: function (t, b, c, d) {
+	            if ((t /= d / 2) < 1) return c / 2 * t * t * t * t * t + b;
+	            return c / 2 * ((t -= 2) * t * t * t * t + 2) + b;
+	        }
+	    },
+	    sine: {
+	        easeIn: function (t, b, c, d) {
+	            return -c * Math.cos(t / d * (Math.PI / 2)) + c + b;
+	        },
+	        easeOut: function (t, b, c, d) {
+	            return c * Math.sin(t / d * (Math.PI / 2)) + b;
+	        },
+	        easeInOut: function (t, b, c, d) {
+	            return -c / 2 * (Math.cos(Math.PI * t / d) - 1) + b;
+	        }
+	    },
+	    expo: {
+	        easeIn: function (t, b, c, d) {
+	            return (t == 0) ? b : c * Math.pow(2, 10 * (t / d - 1)) + b;
+	        },
+	        easeOut: function (t, b, c, d) {
+	            return (t == d) ? b + c : c * (-Math.pow(2, -10 * t / d) + 1) + b;
+	        },
+	        easeInOut: function (t, b, c, d) {
+	            if (t == 0) return b;
+	            if (t == d) return b + c;
+	            if ((t /= d / 2) < 1) return c / 2 * Math.pow(2, 10 * (t - 1)) + b;
+	            return c / 2 * (-Math.pow(2, -10 * --t) + 2) + b;
+	        }
+	    },
+	    circ: {
+	        easeIn: function (t, b, c, d) {
+	            return -c * (Math.sqrt(1 - (t /= d) * t) - 1) + b;
+	        },
+	        easeOut: function (t, b, c, d) {
+	            return c * Math.sqrt(1 - (t = t / d - 1) * t) + b;
+	        },
+	        easeInOut: function (t, b, c, d) {
+	            if ((t /= d / 2) < 1) return -c / 2 * (Math.sqrt(1 - t * t) - 1) + b;
+	            return c / 2 * (Math.sqrt(1 - (t -= 2) * t) + 1) + b;
+	        }
+	    },
+	    elastic: {
+	        easeIn: function (t, b, c, d, a, p) {
+	            var s;
+	            if (t == 0) return b;
+	            if ((t /= d) == 1) return b + c;
+	            if (typeof p == "undefined") p = d * .3;
+	            if (!a || a < Math.abs(c)) {
+	                s = p / 4;
+	                a = c;
+	            } else {
+	                s = p / (2 * Math.PI) * Math.asin(c / a);
+	            }
+	            return -(a * Math.pow(2, 10 * (t -= 1)) * Math.sin((t * d - s) * (2 * Math.PI) / p)) + b;
+	        },
+	        easeOut: function (t, b, c, d, a, p) {
+	            var s;
+	            if (t == 0) return b;
+	            if ((t /= d) == 1) return b + c;
+	            if (typeof p == "undefined") p = d * .3;
+	            if (!a || a < Math.abs(c)) {
+	                a = c;
+	                s = p / 4;
+	            } else {
+	                s = p / (2 * Math.PI) * Math.asin(c / a);
+	            }
+	            return (a * Math.pow(2, -10 * t) * Math.sin((t * d - s) * (2 * Math.PI) / p) + c + b);
+	        },
+	        easeInOut: function (t, b, c, d, a, p) {
+	            var s;
+	            if (t == 0) return b;
+	            if ((t /= d / 2) == 2) return b + c;
+	            if (typeof p == "undefined") p = d * (.3 * 1.5);
+	            if (!a || a < Math.abs(c)) {
+	                a = c;
+	                s = p / 4;
+	            } else {
+	                s = p / (2 * Math.PI) * Math.asin(c / a);
+	            }
+	            if (t < 1) return -.5 * (a * Math.pow(2, 10 * (t -= 1 )) * Math.sin((t * d - s) * (2 * Math.PI) / p)) + b;
+	            return a * Math.pow(2, -10 * (t -= 1)) * Math.sin((t * d - s) * (2 * Math.PI) / p) * .5 + c + b;
+	        }
+	    },
+	    back: {
+	        easeIn: function (t, b, c, d, s) {
+	            if (typeof s == "undefined") s = 1.70158;
+	            return c * (t /= d) * t * ((s + 1) * t - s) + b;
+	        },
+	        easeOut: function (t, b, c, d, s) {
+	            if (typeof s == "undefined") s = 1.70158;
+	            return c * ((t = t / d - 1) * t * ((s + 1) * t + s) + 1) + b;
+	        },
+	        easeInOut: function (t, b, c, d, s) {
+	            if (typeof s == "undefined") s = 1.70158;
+	            if ((t /= d / 2) < 1) return c / 2 * (t * t * (((s *= (1.525)) + 1) * t - s)) + b;
+	            return c / 2 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2) + b;
+	        }
+	    },
+	    bounce: {
+	        easeIn: function (t, b, c, d) {
+	            return c - Tween.bounce.easeOut(d - t, 0, c, d) + b;
+	        },
+	        easeOut: function (t, b, c, d) {
+	            if ((t /= d) < (1 / 2.75)) {
+	                return c * (7.5625 * t * t) + b;
+	            } else if (t < (2 / 2.75)) {
+	                return c * (7.5625 * (t -= (1.5 / 2.75)) * t + .75) + b;
+	            } else if (t < (2.5 / 2.75)) {
+	                return c * (7.5625 * (t -= (2.25 / 2.75)) * t + .9375) + b;
+	            } else {
+	                return c * (7.5625 * (t -= (2.625 / 2.75)) * t + .984375) + b;
+	            }
+	        },
+	        easeInOut: function (t, b, c, d) {
+	            if (t < d / 2) {
+	                return Tween.bounce.easeIn(t * 2, 0, c, d) * .5 + b;
+	            } else {
+	                return Tween.bounce.easeOut(t * 2 - d, 0, c, d) * .5 + c * .5 + b;
+	            }
+	        }
+	    }
+	}
+	
+	module.exports = Tween;
+
+/***/ },
+/* 14 */
+/***/ function(module, exports) {
+
+	var lastTime = 0;
+	
+	var animate = window.requestAnimationFrame ||
+	    window.webkitRequestAnimationFrame ||
+	    window.mozRequestAnimationFrame ||
+	    function (callback) {
+	        var currTime = new Date().getTime();
+	        var timeToCall = Math.max(0, 16.7 - (currTime - lastTime));
+	        var id = setTimeout(function () {
+	            callback(currTime + timeToCall);
+	        }, timeToCall);
+	        lastTime = currTime + timeToCall;
+	        return id;
+	    };
+	
+	var cancelAnimation = window.cancelAnimationFrame ||
+	    window.webkitCancelAnimationFrame ||
+	    window.mozCancelAnimationFrame ||
+	    function (id) {
+	        clearTimeout(id);
+	    };
+	
+	module.exports = function (cb) {
+	    typeof cb === 'function' ? animate(cb) : cancelAnimation(cb);
+	};
+	
+
+
+/***/ },
+/* 15 */
 /***/ function(module, exports) {
 
 	module.exports = "<div class=\"m-picker\">\n  <div class=\"m-picker-inner\">\n    <div class=\"m-picker-rule\"></div>\n    <ul class=\"m-picker-list\">\n      <li v-for=\"(item, index) of list\" :key=\"index\"\n          :style=\"{transform: 'rotateX(' + (-20 * index) +'deg) translateZ(90px)'}\">{{item[label]}}\n      </li>\n    </ul>\n  </div>\n</div>";

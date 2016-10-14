@@ -12,6 +12,13 @@ new Vue({
                 {label: '历史', value: '1'},
                 {label: '政治', value: '1'},
                 {label: 'css', value: '1'},
+                {label: '几何', value: '1'},
+                {label: '语文', value: '1'},
+                {label: '数学', value: '1'},
+                {label: '英语', value: '1'},
+                {label: '历史', value: '1'},
+                {label: '政治', value: '1'},
+                {label: 'css', value: '1'},
                 {label: '几何', value: '1'}
             ],
             curIdx: 1,
