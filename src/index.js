@@ -2,7 +2,6 @@ require('./style.css');
 
 let Touch = require('super-touch');
 let quart = require('super-animation').quart;
-let animate = require('super-animation').animate;
 module.exports = {
     template: require('./template.html'),
     data(){
@@ -10,6 +9,7 @@ module.exports = {
             distinct: 0,
             speed: 0.5,
             curIndex: 0,
+            threshold: 20,
             animatePause: true
         }
     },
@@ -35,10 +35,13 @@ module.exports = {
         }
     },
     watch: {
-        list: 'reload',
+        list: function () {
+            this.curIndex = 0;
+            this.$nextTick(this.reload);
+        },
         curIdx(val, oval){
             this.curIndex = val;
-            this.distinct = val * 20;
+            this.distinct = val * this.threshold;
             //当下标变化时,自动滚动到指定位置
             if (this.$list) {
                 this.$list[oval].classList.remove('highlight');
@@ -51,7 +54,7 @@ module.exports = {
     },
     computed: {
         maxVal(){
-            return (this.list.length - 1) * 20;
+            return (this.list.length - 1) * this.threshold;
         }
     },
     methods: {
@@ -67,7 +70,8 @@ module.exports = {
             this.$emit('picker', JSON.parse(JSON.stringify(this.list[this.curIndex])), this.curIndex);
         },
         internalCal(distinct, isEnd){
-            let baseNum = isEnd ? -0 : 40;
+            let threshold = this.threshold;
+            let baseNum = isEnd ? -0 : threshold * 2;
             if (distinct > this.maxVal + baseNum) {
                 distinct = this.maxVal + baseNum;
             }
@@ -75,9 +79,9 @@ module.exports = {
                 distinct = -baseNum;
             }
 
-            let base = parseInt(distinct / 20);
-            let min = 20 * base;
-            let max = min + 20;
+            let base = parseInt(distinct / threshold);
+            let min = threshold * base;
+            let max = min + threshold;
             let interval = max;
             if (distinct - min <= max - distinct) {
                 interval = min;
@@ -85,7 +89,7 @@ module.exports = {
             distinct = isEnd ? interval : distinct;
             if (distinct >= 0 && distinct <= this.maxVal) {
                 //选中的下表
-                let idx = interval / 20;
+                let idx = interval / threshold;
                 this.$list[this.curIndex].classList.remove('highlight');
                 this.$list[idx].classList.add('highlight');
                 this.curIndex = idx;
@@ -96,7 +100,8 @@ module.exports = {
             return distinct;
         },
         showCal(){
-            if (this.list.length <= 15) return;
+            //小于13全部显示
+            //if (this.list.length <= 13) return;
             let min = this.curIndex - 5;
             let max = this.curIndex + 5;
             for (let i = 0, len = this.list.length; i < len; i++) {
@@ -106,24 +111,21 @@ module.exports = {
         startInertiaScroll(res){
             //缓动
             var v = (res.y1 - res.y2) / res.spend;
-            var dire = v > 0 ? 1 : -1;
             var duration = Math.abs(v / 0.0006);//速度减到0
             var dist = v * duration / 2;//最后执行的距离
-            var start = this.distinct;
-            var end = this.distinct + dist;
-            console.log(start, end, dist, duration);
-            var maxVal = this.maxVal + 40;
-            var index = 0, r = 0, _distinct = start;
+            var _distinct = this.distinct;
+            var minVal = -this.threshold * 2;
+            var maxVal = this.maxVal + this.threshold * 2;
+            var index = 0, r = 0;
             duration /= 5;
             var _inertiaMove = ()=> {
-                if (this.animatePause) return;
-                r = quart.easeOut(index++, start, end, duration);
-                if (dire === -1) {
-                    r = 2 * start - r;
+                if (this.animatePause) {
+                    this.distinct = _distinct;
+                    return;
                 }
-                console.log(r);
+                r = quart.easeOut(index++, this.distinct, dist, duration);
                 _distinct = this.internalCal(r);
-                if (index < duration && r > -40 && r < maxVal) {
+                if (index < duration && r >= minVal && r <= maxVal) {
                     requestAnimationFrame(_inertiaMove);
                 } else {
                     this.animatePause = true;
@@ -138,7 +140,7 @@ module.exports = {
             this.$container = this.$el.querySelector('.m-picker-list');
             this.$list = this.$container.querySelectorAll('li');
             this.$list[this.curIndex].classList.add('highlight');
-            this.distinct = this.curIndex * 20;
+            this.distinct = this.curIndex * this.threshold;
             this.showCal();
             this.$container.style.webkitTransform = 'rotateX(' + this.distinct + 'deg)';
             this.$container.addEventListener("webkitTransitionEnd", ()=> {
@@ -173,7 +175,7 @@ module.exports = {
 
         touch.on('touch:end', (res)=> {
             res.e.preventDefault();
-            if (Math.abs(res.y1 - res.y2) < 20) {
+            if (Math.abs(res.y1 - res.y2) < this.threshold * 2) {
                 this.end();
             } else {
                 this.animatePause = false;

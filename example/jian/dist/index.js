@@ -7975,7 +7975,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var Touch = __webpack_require__(9);
 	var quart = __webpack_require__(12).quart;
-	var animate = __webpack_require__(12).animate;
 	module.exports = {
 	    template: __webpack_require__(15),
 	    data: function data() {
@@ -7983,6 +7982,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            distinct: 0,
 	            speed: 0.5,
 	            curIndex: 0,
+	            threshold: 20,
 	            animatePause: true
 	        };
 	    },
@@ -8012,7 +8012,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        list: 'reload',
 	        curIdx: function curIdx(val, oval) {
 	            this.curIndex = val;
-	            this.distinct = val * 20;
+	            this.distinct = val * this.threshold;
 	            //当下标变化时,自动滚动到指定位置
 	            if (this.$list) {
 	                this.$list[oval].classList.remove('highlight');
@@ -8041,7 +8041,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.$emit('picker', JSON.parse(JSON.stringify(this.list[this.curIndex])), this.curIndex);
 	        },
 	        internalCal: function internalCal(distinct, isEnd) {
-	            var baseNum = isEnd ? -0 : 40;
+	            var threshold = this.threshold;
+	            var baseNum = isEnd ? -0 : threshold * 2;
 	            if (distinct > this.maxVal + baseNum) {
 	                distinct = this.maxVal + baseNum;
 	            }
@@ -8049,9 +8050,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                distinct = -baseNum;
 	            }
 	
-	            var base = parseInt(distinct / 20);
-	            var min = 20 * base;
-	            var max = min + 20;
+	            var base = parseInt(distinct / threshold);
+	            var min = threshold * base;
+	            var max = min + threshold;
 	            var interval = max;
 	            if (distinct - min <= max - distinct) {
 	                interval = min;
@@ -8059,7 +8060,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            distinct = isEnd ? interval : distinct;
 	            if (distinct >= 0 && distinct <= this.maxVal) {
 	                //选中的下表
-	                var idx = interval / 20;
+	                var idx = interval / threshold;
 	                this.$list[this.curIndex].classList.remove('highlight');
 	                this.$list[idx].classList.add('highlight');
 	                this.curIndex = idx;
@@ -8070,7 +8071,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return distinct;
 	        },
 	        showCal: function showCal() {
-	            if (this.list.length <= 15) return;
+	            if (this.list.length <= 13) return;
 	            var min = this.curIndex - 5;
 	            var max = this.curIndex + 5;
 	            for (var i = 0, len = this.list.length; i < len; i++) {
@@ -8082,26 +8083,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	            //缓动
 	            var v = (res.y1 - res.y2) / res.spend;
-	            var dire = v > 0 ? 1 : -1;
 	            var duration = Math.abs(v / 0.0006); //速度减到0
 	            var dist = v * duration / 2; //最后执行的距离
-	            var start = this.distinct;
-	            var end = this.distinct + dist;
-	            console.log(start, end, dist, duration);
-	            var maxVal = this.maxVal + 40;
+	            var _distinct = this.distinct;
+	            var minVal = -this.threshold * 2;
+	            var maxVal = this.maxVal + this.threshold * 2;
 	            var index = 0,
-	                r = 0,
-	                _distinct = start;
+	                r = 0;
 	            duration /= 5;
 	            var _inertiaMove = function _inertiaMove() {
-	                if (_this.animatePause) return;
-	                r = quart.easeOut(index++, start, end, duration);
-	                if (dire === -1) {
-	                    r = 2 * start - r;
+	                if (_this.animatePause) {
+	                    _this.distinct = _distinct;
+	                    return;
 	                }
-	                console.log(r);
+	                r = quart.easeOut(index++, _this.distinct, dist, duration);
 	                _distinct = _this.internalCal(r);
-	                if (index < duration && r > -40 && r < maxVal) {
+	                if (index < duration && r >= minVal && r <= maxVal) {
 	                    requestAnimationFrame(_inertiaMove);
 	                } else {
 	                    _this.animatePause = true;
@@ -8118,7 +8115,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.$container = this.$el.querySelector('.m-picker-list');
 	            this.$list = this.$container.querySelectorAll('li');
 	            this.$list[this.curIndex].classList.add('highlight');
-	            this.distinct = this.curIndex * 20;
+	            this.distinct = this.curIndex * this.threshold;
 	            this.showCal();
 	            this.$container.style.webkitTransform = 'rotateX(' + this.distinct + 'deg)';
 	            this.$container.addEventListener("webkitTransitionEnd", function () {
@@ -8156,7 +8153,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        touch.on('touch:end', function (res) {
 	            res.e.preventDefault();
-	            if (Math.abs(res.y1 - res.y2) < 20) {
+	            if (Math.abs(res.y1 - res.y2) < _this4.threshold * 2) {
 	                _this4.end();
 	            } else {
 	                _this4.animatePause = false;
@@ -8788,31 +8785,29 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 14 */
 /***/ function(module, exports) {
 
-	var lastTime = 0;
+	(function () {
+	    var lastTime = 0;
 	
-	var animate = window.requestAnimationFrame ||
-	    window.webkitRequestAnimationFrame ||
-	    window.mozRequestAnimationFrame ||
-	    function (callback) {
-	        var currTime = new Date().getTime();
-	        var timeToCall = Math.max(0, 16.7 - (currTime - lastTime));
-	        var id = setTimeout(function () {
-	            callback(currTime + timeToCall);
-	        }, timeToCall);
-	        lastTime = currTime + timeToCall;
-	        return id;
-	    };
+	    window.requestAnimationFrame = window.requestAnimationFrame ||
+	        window.webkitRequestAnimationFrame ||
+	        window.mozRequestAnimationFrame ||
+	        function (callback) {
+	            var currTime = new Date().getTime();
+	            var timeToCall = Math.max(0, 16.7 - (currTime - lastTime));
+	            var id = setTimeout(function () {
+	                callback(currTime + timeToCall);
+	            }, timeToCall);
+	            lastTime = currTime + timeToCall;
+	            return id;
+	        };
 	
-	var cancelAnimation = window.cancelAnimationFrame ||
-	    window.webkitCancelAnimationFrame ||
-	    window.mozCancelAnimationFrame ||
-	    function (id) {
-	        clearTimeout(id);
-	    };
-	
-	module.exports = function (cb) {
-	    typeof cb === 'function' ? animate(cb) : cancelAnimation(cb);
-	};
+	    window.cancelAnimationFrame = window.cancelAnimationFrame ||
+	        window.webkitCancelAnimationFrame ||
+	        window.mozCancelAnimationFrame ||
+	        function (id) {
+	            clearTimeout(id);
+	        };
+	})();
 	
 
 
@@ -8820,7 +8815,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 15 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"m-picker\">\n  <div class=\"m-picker-inner\">\n    <div class=\"m-picker-rule\"></div>\n    <ul class=\"m-picker-list\">\n      <li v-for=\"(item, index) of list\" :key=\"index\"\n          :style=\"{transform: 'rotateX(' + (-20 * index) +'deg) translateZ(90px)'}\">{{item[label]}}\n      </li>\n    </ul>\n  </div>\n</div>";
+	module.exports = "<div class=\"m-picker\">\n  <div class=\"m-picker-inner\">\n    <div class=\"m-picker-rule\"></div>\n    <ul class=\"m-picker-list\">\n      <li v-for=\"(item, index) of list\" :key=\"index\"\n          :style=\"{transform: 'rotateX(' + (-threshold * index) +'deg) translateZ(90px)'}\">{{item[label]}}\n      </li>\n    </ul>\n  </div>\n</div>";
 
 /***/ }
 /******/ ])
