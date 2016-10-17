@@ -7,9 +7,7 @@ npm install vue-m-picker
 <pre>
 var Vue = require('vue');
 Vue.component('region-picker', require('vue-m-picker'));
-//在模版文件中使用,组件从距离顶部的位置开始, color样式颜色
-//&lt;region-picker :list="provinceList" :picker.sync="province" :cur-idx.sync="provinceIdx" label="name"
-                                       value="code">&lt;/region-picker>
+&lt;picker :list="list" :cur-idx="curIdx" @picker="result">&lt;/picker>
 
 //通过props传值
 props: {
