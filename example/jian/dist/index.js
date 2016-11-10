@@ -131,7 +131,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	
 	// module
-	exports.push([module.id, ".choose-result {\n  text-align: center;\n  position: absolute;\n  top: 100px;\n  width: 100%;\n}\n\n.choose-result .choose-result-cnt {\n  margin-top: 30px;\n}\n\n.picker-wrapper {\n  position: fixed;\n  bottom: -260px;\n  width: 100%;\n  transition: bottom 0.3s\n}\n\n.picker-wrapper.open {\n  bottom: 0;\n}\n\n.picker-wrapper .picker-action {\n  box-sizing: border-box;\n  height: 50px;\n  background-color: #f3efef;\n  padding: 8px 10px;\n  box-shadow: 0 -1px 3px 1px #ddd;\n}\n\n.btn {\n  display: inline-block;\n  outline: none;\n  line-height: 1.42;\n  padding: 6px 12px;\n  font-size: 14px;\n  font-weight: normal;\n  text-align: center;\n  vertical-align: middle;\n  cursor: pointer;\n  background-color: #fff;\n  color: #333;\n  text-decoration: none;\n  white-space: nowrap;\n  border: 1px solid #ddd;\n  border-radius: 3px;\n}\n\n.btn.btn-confirm {\n  background-color: #027CFF;\n  border: 1px solid #027CFF;\n  color: #fff;\n  float: right;\n}", ""]);
+	exports.push([module.id, ".choose-result {\n  text-align: center;\n  position: absolute;\n  top: 100px;\n  width: 100%;\n}\n\n.choose-result .choose-result-cnt {\n  margin-top: 30px;\n}\n\n.picker-wrapper {\n  position: fixed;\n  width: 100%;\n  z-index: 1;\n  bottom: 0;\n  transition: transform 0.3s linear;\n  -webkit-transition: -webkit-transform 0.3s linear;\n  transform: translate3d(0, 250px, 0);\n  -webkit-transform: translate3d(0, 250px, 0);\n}\n\n.picker-wrapper.open {\n  transform: translate3d(0, 0, 0);\n  -webkit-transform: translate3d(0, 0, 0);\n}\n\n.picker-wrapper .picker-action {\n  box-sizing: border-box;\n  background-color: #fff;\n  padding: 5px 10px;\n  box-shadow: 0 -1px 3px 1px #ddd;\n  border-bottom: 1px solid #e5e5e5;\n}\n\n.picker-wrapper .picker-action .btn {\n  display: inline-block;\n  outline: none;\n  line-height: 1.42;\n  padding: 6px 12px;\n  font-size: 16px;\n  font-weight: normal;\n  text-align: center;\n  vertical-align: middle;\n  cursor: pointer;\n  color: #316CCB;\n  text-decoration: none;\n  white-space: nowrap;\n}\n\n.picker-wrapper .picker-action .btn.btn-confirm {\n  float: right;\n}", ""]);
 	
 	// exports
 
@@ -8009,7 +8009,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    },
 	    watch: {
-	        list: 'reload',
+	        list: function list() {
+	            this.curIndex = 0;
+	            this.$nextTick(this.reload);
+	        },
 	        curIdx: function curIdx(val, oval) {
 	            this.curIndex = val;
 	            this.distinct = val * this.threshold;
@@ -8025,7 +8028,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 	    computed: {
 	        maxVal: function maxVal() {
-	            return (this.list.length - 1) * 20;
+	            return (this.list.length - 1) * this.threshold;
 	        }
 	    },
 	    methods: {
@@ -8071,7 +8074,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return distinct;
 	        },
 	        showCal: function showCal() {
-	            if (this.list.length <= 13) return;
+	            //小于13全部显示
+	            //if (this.list.length <= 13) return;
 	            var min = this.curIndex - 5;
 	            var max = this.curIndex + 5;
 	            for (var i = 0, len = this.list.length; i < len; i++) {
@@ -8198,7 +8202,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	
 	// module
-	exports.push([module.id, "/**\n   transform\n       1: transform的值有先后顺序,如rotateX(40deg) translateZ(60px);表示先在X轴旋转40度,再在Z轴上移动60px\n           如果translateZ(60px) rotateX(40deg);表示先在Z轴上移动60px,再在X轴旋转40度\n      2: transform-origin要和transform一起使用才有效\n*/\n.m-picker,\n.m-picker * {\n  box-sizing: border-box;\n}\n.m-picker {\n  height: 200px;\n  background-color: #ddd;\n}\n.m-picker .m-picker-inner {\n  position: relative;\n  height: 100%;\n  width: 100%;\n  -webkit-mask-box-image: -webkit-linear-gradient(bottom, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent);\n  -webkit-mask-box-image: linear-gradient(top, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent);\n}\n.m-picker .m-picker-inner .m-picker-list,\n.m-picker .m-picker-inner .m-picker-rule {\n  z-index: 1;\n  position: absolute;\n  top: 50%;\n  margin-top: -18px;\n  width: 100%;\n  list-style: none;\n  padding: 0;\n  line-height: 36px;\n  height: 36px;\n}\n.m-picker .m-picker-inner .m-picker-rule {\n  z-index: 2;\n  border-top: 1px solid rgba(0,0,0,0.1);\n  border-bottom: 1px solid rgba(0,0,0,0.1);\n}\n.m-picker .m-picker-inner .m-picker-list {\n  transform-style: preserve-3d;\n  -webkit-transform-style: preserve-3d;\n  perspective: 1000px;\n  -webkit-perspective: 1000px;\n}\n.m-picker .m-picker-inner .m-picker-list li {\n  display: inline-block;\n  position: absolute;\n  width: 100%;\n  text-align: center;\n  font-size: 16px;\n  font-family: \"Helvetica Neue\", \"Helvetica\", \"Arial\", \"sans-serif\";\n  color: #888;\n/* 超出的部分省略 */\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n/* 元素不面向屏幕时是否可见 */\n  backface-visibility: hidden;\n  -webkit-backface-visibility: hidden;\n}\n.m-picker .m-picker-inner .m-picker-list li.highlight {\n  color: #222;\n}\n", ""]);
+	exports.push([module.id, "/**\n   transform\n       1: transform的值有先后顺序,如rotateX(40deg) translateZ(60px);表示先在X轴旋转40度,再在Z轴上移动60px\n           如果translateZ(60px) rotateX(40deg);表示先在Z轴上移动60px,再在X轴旋转40度\n      2: transform-origin要和transform一起使用才有效\n*/\n.m-picker,\n.m-picker * {\n  box-sizing: border-box;\n}\n.m-picker {\n  height: 200px;\n  background-color: #fff;\n}\n.m-picker .m-picker-inner {\n  position: relative;\n  height: 100%;\n  width: 100%;\n  -webkit-mask-box-image: -webkit-linear-gradient(bottom, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent);\n  -webkit-mask-box-image: linear-gradient(top, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent);\n}\n.m-picker .m-picker-inner .m-picker-list,\n.m-picker .m-picker-inner .m-picker-rule {\n  z-index: 1;\n  position: absolute;\n  top: 50%;\n  margin-top: -18px;\n  width: 100%;\n  list-style: none;\n  padding: 0;\n  line-height: 36px;\n  height: 36px;\n}\n.m-picker .m-picker-inner .m-picker-rule {\n  z-index: 2;\n  border-top: 1px solid rgba(0,0,0,0.1);\n  border-bottom: 1px solid rgba(0,0,0,0.1);\n}\n.m-picker .m-picker-inner .m-picker-list {\n  transform-style: preserve-3d;\n  -webkit-transform-style: preserve-3d;\n}\n.m-picker .m-picker-inner .m-picker-list li {\n  display: inline-block;\n  position: absolute;\n  width: 100%;\n  text-align: center;\n  font-size: 16px;\n  font-family: \"Helvetica Neue\", \"Helvetica\", \"Arial\", \"sans-serif\";\n  color: #959595;\n/* 超出的部分省略 */\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n/* 元素不面向屏幕时是否可见 */\n  backface-visibility: hidden;\n  -webkit-backface-visibility: hidden;\n}\n.m-picker .m-picker-inner .m-picker-list li.highlight {\n  color: #353535;\n  font-weight: bold;\n}\n", ""]);
 	
 	// exports
 

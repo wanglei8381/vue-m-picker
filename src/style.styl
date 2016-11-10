@@ -11,7 +11,7 @@
 
 .m-picker {
   height: 200px;
-  background-color: #ddd;
+  background-color: #fff;
 
   .m-picker-inner {
     position: relative;
@@ -40,8 +40,8 @@
     .m-picker-list {
       transform-style: preserve-3d;
       -webkit-transform-style: preserve-3d;
-      perspective: 1000px;
-      -webkit-perspective: 1000px;
+      //perspective: 1000px;
+      //-webkit-perspective: 1000px;
       li {
         display: inline-block;
         position: absolute;
@@ -49,7 +49,7 @@
         text-align: center;
         font-size: 16px;
         font-family: "Helvetica Neue", "Helvetica", "Arial", "sans-serif";
-        color: #888;
+        color: #959595;
         /* 超出的部分省略 */
         text-overflow: ellipsis;
         overflow: hidden;
@@ -59,7 +59,8 @@
         -webkit-backface-visibility: hidden;
 
         &.highlight {
-          color: #222;
+          color: #353535;
+          font-weight bold
         }
       }
     }
