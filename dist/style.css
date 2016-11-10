@@ -10,7 +10,7 @@
 }
 .m-picker {
   height: 200px;
-  background-color: #ddd;
+  background-color: #fff;
 }
 .m-picker .m-picker-inner {
   position: relative;
@@ -39,8 +39,6 @@
 .m-picker .m-picker-inner .m-picker-list {
   transform-style: preserve-3d;
   -webkit-transform-style: preserve-3d;
-  perspective: 1000px;
-  -webkit-perspective: 1000px;
 }
 .m-picker .m-picker-inner .m-picker-list li {
   display: inline-block;
@@ -49,7 +47,7 @@
   text-align: center;
   font-size: 16px;
   font-family: "Helvetica Neue", "Helvetica", "Arial", "sans-serif";
-  color: #888;
+  color: #959595;
 /* 超出的部分省略 */
   text-overflow: ellipsis;
   overflow: hidden;
@@ -59,5 +57,6 @@
   -webkit-backface-visibility: hidden;
 }
 .m-picker .m-picker-inner .m-picker-list li.highlight {
-  color: #222;
+  color: #353535;
+  font-weight: bold;
 }
