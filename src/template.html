@@ -1,10 +1,18 @@
-<div class="m-picker">
-  <div class="m-picker-inner">
-    <div class="m-picker-rule"></div>
-    <ul class="m-picker-list">
-      <li v-for="(item, index) of list" :key="index"
-          :style="{transform: 'rotateX(' + (-threshold * index) +'deg) translateZ(90px)'}">{{item[label]}}
-      </li>
-    </ul>
+<div v-touch:tap="cancel" class="picker-container" :class="{'open':open}">
+  <div class="picker-wrapper" v-touch:tap.stop>
+    <div class="picker-action">
+      <span class="btn btn-cancle" v-touch:tap="cancel">取消</span>
+      <span class="btn btn-confirm" v-touch:tap="choose">确定</span>
+    </div>
+    <div class="m-picker">
+      <div class="m-picker-inner">
+        <div class="m-picker-rule"></div>
+        <ul class="m-picker-list">
+          <li v-for="(item, index) of list" :key="index"
+              :style="{transform: 'rotateX(' + (-threshold * index) +'deg) translateZ(90px)'}">{{item[label]}}
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </div>

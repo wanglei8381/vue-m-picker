@@ -74,25 +74,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	        choose: function choose() {
 	            this.open = true;
 	        },
-	        cancle: function cancle() {
+	        cancel: function cancel() {
+	            console.log('cancel');
 	            this.open = false;
 	        },
-	        confirm: function confirm() {
+	        confirm: function confirm(item, index) {
 	            this.open = false;
-	            this.message = this.picker.label;
-	        },
-	        result: function result(item, index) {
 	            console.log(item, index);
 	            this.picker = item;
 	        }
 	    },
 	    mounted: function mounted() {
-	        var _this = this;
-	
 	        // this.curIdx=2;
-	        window.addEventListener('click', function () {
-	            _this.open = false;
-	        });
+	        // window.addEventListener('click', ()=> {
+	        //     this.open = false;
+	        // });
 	    }
 	});
 
@@ -7975,8 +7971,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var Touch = __webpack_require__(9);
 	var quart = __webpack_require__(12).quart;
+	__webpack_require__(5).use(__webpack_require__(15));
 	module.exports = {
-	    template: __webpack_require__(15),
+	    template: __webpack_require__(16),
 	    data: function data() {
 	        return {
 	            distinct: 0,
@@ -8006,6 +8003,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	            type: Number,
 	            required: false,
 	            default: 0
+	        },
+	        open: {
+	            type: Boolean,
+	            required: true
+	        },
+	        cancel: {
+	            type: Function,
+	            required: true
+	        },
+	        confirm: {
+	            type: Function,
+	            required: true
 	        }
 	    },
 	    watch: {
@@ -8032,6 +8041,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    },
 	    methods: {
+	        choose: function choose() {
+	            this.confirm(JSON.parse(JSON.stringify(this.list[this.curIndex])), this.curIndex);
+	        },
 	        move: function move(res) {
 	            var distinct = this.distinct;
 	            distinct += res.yrange * this.speed;
@@ -8041,7 +8053,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var distinct = this.distinct;
 	            this.distinct = this.internalCal(distinct, true);
 	            this.$container.style.webkitTransition = '100ms ease-out';
-	            this.$emit('picker', JSON.parse(JSON.stringify(this.list[this.curIndex])), this.curIndex);
+	            // this.$emit('picker', );
 	        },
 	        internalCal: function internalCal(distinct, isEnd) {
 	            var threshold = this.threshold;
@@ -8142,7 +8154,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.reload();
 	        }
 	
-	        var touch = new Touch(this.$el);
+	        var touch = new Touch(this.$el.querySelector('.m-picker'));
 	        touch.start();
 	        touch.on('touch:start', function (res) {
 	            //暂停执行缓动
@@ -8202,7 +8214,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	
 	// module
-	exports.push([module.id, "/**\n   transform\n       1: transform的值有先后顺序,如rotateX(40deg) translateZ(60px);表示先在X轴旋转40度,再在Z轴上移动60px\n           如果translateZ(60px) rotateX(40deg);表示先在Z轴上移动60px,再在X轴旋转40度\n      2: transform-origin要和transform一起使用才有效\n*/\n.m-picker,\n.m-picker * {\n  box-sizing: border-box;\n}\n.m-picker {\n  height: 200px;\n  background-color: #fff;\n}\n.m-picker .m-picker-inner {\n  position: relative;\n  height: 100%;\n  width: 100%;\n  -webkit-mask-box-image: -webkit-linear-gradient(bottom, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent);\n  -webkit-mask-box-image: linear-gradient(top, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent);\n}\n.m-picker .m-picker-inner .m-picker-list,\n.m-picker .m-picker-inner .m-picker-rule {\n  z-index: 1;\n  position: absolute;\n  top: 50%;\n  margin-top: -18px;\n  width: 100%;\n  list-style: none;\n  padding: 0;\n  line-height: 36px;\n  height: 36px;\n}\n.m-picker .m-picker-inner .m-picker-rule {\n  z-index: 2;\n  border-top: 1px solid rgba(0,0,0,0.1);\n  border-bottom: 1px solid rgba(0,0,0,0.1);\n}\n.m-picker .m-picker-inner .m-picker-list {\n  transform-style: preserve-3d;\n  -webkit-transform-style: preserve-3d;\n}\n.m-picker .m-picker-inner .m-picker-list li {\n  display: inline-block;\n  position: absolute;\n  width: 100%;\n  text-align: center;\n  font-size: 16px;\n  font-family: \"Helvetica Neue\", \"Helvetica\", \"Arial\", \"sans-serif\";\n  color: #959595;\n/* 超出的部分省略 */\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n/* 元素不面向屏幕时是否可见 */\n  backface-visibility: hidden;\n  -webkit-backface-visibility: hidden;\n}\n.m-picker .m-picker-inner .m-picker-list li.highlight {\n  color: #353535;\n  font-weight: bold;\n}\n", ""]);
+	exports.push([module.id, "/**\n   transform\n       1: transform的值有先后顺序,如rotateX(40deg) translateZ(60px);表示先在X轴旋转40度,再在Z轴上移动60px\n           如果translateZ(60px) rotateX(40deg);表示先在Z轴上移动60px,再在X轴旋转40度\n      2: transform-origin要和transform一起使用才有效\n*/\n.picker-container {\n  position: fixed;\n  top: 0;\n  left: 0;\n  z-index: -1;\n  width: 100%;\n  height: 100%;\n  background-color: rgba(0,0,0,0.4);\n  -webkit-transition: opacity 400ms;\n  transition: opacity 400ms;\n  opacity: 0;\n}\n.picker-container.open {\n  z-index: 1;\n  opacity: 1;\n}\n.picker-container.open .picker-wrapper {\n  transform: translate3d(0, 0, 0);\n  -webkit-transform: translate3d(0, 0, 0);\n}\n.picker-container .picker-wrapper {\n  position: fixed;\n  width: 100%;\n  z-index: 1;\n  bottom: 0;\n  left: 0;\n  transition: transform 0.3s linear;\n  -webkit-transition: -webkit-transform 0.3s linear;\n  transform: translate3d(0, 250px, 0);\n  -webkit-transform: translate3d(0, 250px, 0);\n}\n.picker-container .picker-wrapper .picker-action {\n  box-sizing: border-box;\n  background-color: #fff;\n  padding: 5px 10px;\n  box-shadow: 0 -1px 3px 1px #ddd;\n  border-bottom: 1px solid #e5e5e5;\n}\n.picker-container .picker-wrapper .picker-action .btn {\n  display: inline-block;\n  outline: none;\n  line-height: 1.42;\n  padding: 6px 12px;\n  font-size: 16px;\n  font-weight: normal;\n  text-align: center;\n  vertical-align: middle;\n  cursor: pointer;\n  color: #316ccb;\n  text-decoration: none;\n  white-space: nowrap;\n}\n.picker-container .picker-wrapper .picker-action .btn.btn-confirm {\n  float: right;\n}\n.m-picker,\n.m-picker * {\n  box-sizing: border-box;\n}\n.m-picker {\n  height: 200px;\n  background-color: #fff;\n}\n.m-picker .m-picker-inner {\n  position: relative;\n  height: 100%;\n  width: 100%;\n  -webkit-mask-box-image: -webkit-linear-gradient(bottom, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent);\n  -webkit-mask-box-image: linear-gradient(top, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent);\n}\n.m-picker .m-picker-inner .m-picker-list,\n.m-picker .m-picker-inner .m-picker-rule {\n  z-index: 1;\n  position: absolute;\n  top: 50%;\n  margin-top: -18px;\n  width: 100%;\n  list-style: none;\n  padding: 0;\n  line-height: 36px;\n  height: 36px;\n}\n.m-picker .m-picker-inner .m-picker-rule {\n  z-index: 2;\n  border-top: 1px solid rgba(0,0,0,0.1);\n  border-bottom: 1px solid rgba(0,0,0,0.1);\n}\n.m-picker .m-picker-inner .m-picker-list {\n  transform-style: preserve-3d;\n  -webkit-transform-style: preserve-3d;\n}\n.m-picker .m-picker-inner .m-picker-list li {\n  display: inline-block;\n  position: absolute;\n  width: 100%;\n  text-align: center;\n  font-size: 16px;\n  font-family: \"Helvetica Neue\", \"Helvetica\", \"Arial\", \"sans-serif\";\n  color: #959595;\n/* 超出的部分省略 */\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n/* 元素不面向屏幕时是否可见 */\n  backface-visibility: hidden;\n  -webkit-backface-visibility: hidden;\n}\n.m-picker .m-picker-inner .m-picker-list li.highlight {\n  color: #353535;\n  font-weight: bold;\n}\n", ""]);
 	
 	// exports
 
@@ -8817,9 +8829,87 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Touch = __webpack_require__(9);
+	
+	var app = module.exports = {};
+	app.install = function (Vue, options) {
+	
+	    options = options || {};
+	    var longTapTime = options.longTapTime || 350;
+	
+	    Vue.directive('touch', {
+	        bind: function (el, binding, vnode) {
+	            var touch = el.touch = new Touch(el);
+	            var longTapTimeout = null;
+	            var handler = function (res) {
+	                var e = res.e;
+	                if (typeof binding.value === 'function') {
+	                    var _handler = function () {
+	                        if (binding.modifiers.self) {
+	                            if (e.target === e.currentTarget) {
+	                                binding.value(e);
+	                            }
+	                        } else {
+	                            binding.value(e);
+	                        }
+	                    }
+	
+	                    switch (binding.arg) {
+	                        case 'tap':
+	                            if (Math.abs(res.x1 - res.x2) < 30 && Math.abs(res.y1 - res.y2) < 30) {
+	                                _handler();
+	                            }
+	                            break;
+	                        case 'longtap':
+	                            _handler();
+	                            break;
+	                    }
+	                }
+	            };
+	
+	            var modify = function (e) {
+	                if (binding.modifiers.stop) {
+	                    e.stopPropagation();
+	                }
+	                if (binding.modifiers.prevent) {
+	                    e.preventDefault();
+	                }
+	            }
+	
+	            touch.on('touch:start', function (res) {
+	                modify(res.e);
+	                longTapTimeout = setTimeout(function () {
+	                    handler(res);
+	                }, longTapTime);
+	            });
+	
+	            touch.on('touch:move', function () {
+	                clearTimeout(longTapTimeout);
+	            });
+	
+	            touch.on('touch:end', function (res) {
+	                clearTimeout(longTapTimeout);
+	                modify(res.e);
+	                handler(res);
+	            });
+	
+	            touch.start();
+	        },
+	        unbind: function (el) {
+	            //删除dom监听事件
+	            el.touch._remove();
+	            el.touch = null;
+	        }
+	    });
+	}
+
+/***/ },
+/* 16 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"m-picker\">\n  <div class=\"m-picker-inner\">\n    <div class=\"m-picker-rule\"></div>\n    <ul class=\"m-picker-list\">\n      <li v-for=\"(item, index) of list\" :key=\"index\"\n          :style=\"{transform: 'rotateX(' + (-threshold * index) +'deg) translateZ(90px)'}\">{{item[label]}}\n      </li>\n    </ul>\n  </div>\n</div>";
+	module.exports = "<div v-touch:tap=\"cancel\" class=\"picker-container\" :class=\"{'open':open}\">\n  <div class=\"picker-wrapper\" v-touch:tap.stop>\n    <div class=\"picker-action\">\n      <span class=\"btn btn-cancle\" v-touch:tap=\"cancel\">取消</span>\n      <span class=\"btn btn-confirm\" v-touch:tap=\"choose\">确定</span>\n    </div>\n    <div class=\"m-picker\">\n      <div class=\"m-picker-inner\">\n        <div class=\"m-picker-rule\"></div>\n        <ul class=\"m-picker-list\">\n          <li v-for=\"(item, index) of list\" :key=\"index\"\n              :style=\"{transform: 'rotateX(' + (-threshold * index) +'deg) translateZ(90px)'}\">{{item[label]}}\n          </li>\n        </ul>\n      </div>\n    </div>\n  </div>\n</div>";
 
 /***/ }
 /******/ ])

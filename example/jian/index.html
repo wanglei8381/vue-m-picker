@@ -12,7 +12,7 @@
   <style>
     body {
       margin: 0;
-      background: #ddd;
+      background: #fff;
     }
 
   </style>
@@ -24,13 +24,7 @@
     <p class="choose-result-cnt">选中了:{{message}}</p>
   </div>
 
-  <div class="picker-wrapper" @click.stop :class="{'open':open}">
-    <div class="picker-action">
-      <span class="btn btn-cancle" @click="cancle">取消</span>
-      <span class="btn btn-confirm" @click="confirm">确定</span>
-    </div>
-    <picker :list="list" :cur-idx="curIdx" @picker="result"></picker>
-  </div>
+  <picker :list="list" :cur-idx="curIdx" :open="open" :cancel="cancel" :confirm="confirm"></picker>
 </div>
 <script src="dist/index.js"></script>
 </body>

@@ -1,6 +1,6 @@
 {
-  "name": "vue-m-picker",
-  "version": "0.0.6",
+  "name": "@wag/vue-m-picker",
+  "version": "0.0.7",
   "description": "移动端选择工具",
   "license": "MIT",
   "main": "index.js",
@@ -23,9 +23,10 @@
     "prepublish": "npm run move && npm run compile"
   },
   "dependencies": {
-    "super-touch": "^0.0.4",
     "super-animation": "^0.0.6",
-    "vue": "^2.0.2"
+    "super-touch": "^0.0.4",
+    "vue": "^2.0.2",
+    "vue-m-touch": "0.0.6"
   },
   "devDependencies": {
     "babel-core": "^6.9.0",

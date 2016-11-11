@@ -31,22 +31,20 @@ new Vue({
         choose: function () {
             this.open = true;
         },
-        cancle: function () {
+        cancel: function () {
+            console.log('cancel');
             this.open = false;
         },
-        confirm: function () {
+        confirm: function (item, index) {
             this.open = false;
-            this.message = this.picker.label;
-        },
-        result(item, index){
             console.log(item, index);
             this.picker = item;
         }
     },
     mounted(){
         // this.curIdx=2;
-        window.addEventListener('click', ()=> {
-            this.open = false;
-        });
+        // window.addEventListener('click', ()=> {
+        //     this.open = false;
+        // });
     }
 });

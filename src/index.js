@@ -2,6 +2,7 @@ require('./style.css');
 
 let Touch = require('super-touch');
 let quart = require('super-animation').quart;
+require('vue').use(require('vue-m-touch'));
 module.exports = {
     template: require('./template.html'),
     data(){
@@ -32,6 +33,18 @@ module.exports = {
             type: Number,
             required: false,
             default: 0
+        },
+        open: {
+            type: Boolean,
+            required: true
+        },
+        cancel: {
+            type: Function,
+            required: true
+        },
+        confirm: {
+            type: Function,
+            required: true
         }
     },
     watch: {
@@ -58,6 +71,9 @@ module.exports = {
         }
     },
     methods: {
+        choose: function () {
+            this.confirm(JSON.parse(JSON.stringify(this.list[this.curIndex])), this.curIndex);
+        },
         move(res){
             let distinct = this.distinct;
             distinct += res.yrange * this.speed;
@@ -67,7 +83,7 @@ module.exports = {
             let distinct = this.distinct;
             this.distinct = this.internalCal(distinct, true);
             this.$container.style.webkitTransition = '100ms ease-out';
-            this.$emit('picker', JSON.parse(JSON.stringify(this.list[this.curIndex])), this.curIndex);
+            // this.$emit('picker', );
         },
         internalCal(distinct, isEnd){
             let threshold = this.threshold;
@@ -160,7 +176,7 @@ module.exports = {
             this.reload();
         }
 
-        var touch = new Touch(this.$el);
+        var touch = new Touch(this.$el.querySelector('.m-picker'));
         touch.start();
         touch.on('touch:start', (res)=> {
             //暂停执行缓动
