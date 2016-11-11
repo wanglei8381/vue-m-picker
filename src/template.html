@@ -4,15 +4,11 @@
       <span class="btn btn-cancle" v-touch:tap="cancel">取消</span>
       <span class="btn btn-confirm" v-touch:tap="choose">确定</span>
     </div>
-    <div class="m-picker">
-      <div class="m-picker-inner">
-        <div class="m-picker-rule"></div>
-        <ul class="m-picker-list">
-          <li v-for="(item, index) of list" :key="index"
-              :style="{transform: 'rotateX(' + (-threshold * index) +'deg) translateZ(90px)'}">{{item[label]}}
-          </li>
-        </ul>
-      </div>
+
+    <div :style="style" v-for="(item,index) in list">
+      <region-picker-cpt :list="list[index]" @picker="provincepicker" :cur-idx="provinceIdx" label="name"
+                         value="code"></region-picker-cpt>
     </div>
+
   </div>
 </div>

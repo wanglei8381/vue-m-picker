@@ -9,45 +9,18 @@
   margin-top: 30px;
 }
 
-.picker-wrapper {
-  position: fixed;
+
+.picker-header {
+  height: 40px;
   width: 100%;
-  z-index: 1;
-  bottom: 0;
-  transition: transform 0.3s linear;
-  -webkit-transition: -webkit-transform 0.3s linear;
-  transform: translate3d(0, 250px, 0);
-  -webkit-transform: translate3d(0, 250px, 0);
+  background-color: #F5F5F5;
 }
 
-.picker-wrapper.open {
-  transform: translate3d(0, 0, 0);
-  -webkit-transform: translate3d(0, 0, 0);
-}
-
-.picker-wrapper .picker-action {
-  box-sizing: border-box;
-  background-color: #fff;
-  padding: 5px 10px;
-  box-shadow: 0 -1px 3px 1px #ddd;
-  border-bottom: 1px solid #e5e5e5;
-}
-
-.picker-wrapper .picker-action .btn {
-  display: inline-block;
-  outline: none;
-  line-height: 1.42;
-  padding: 6px 12px;
-  font-size: 16px;
-  font-weight: normal;
+.picker-header .picker-title {
+  float: left;
+  width: 50%;
   text-align: center;
-  vertical-align: middle;
-  cursor: pointer;
-  color: #316CCB;
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.picker-wrapper .picker-action .btn.btn-confirm {
-  float: right;
+  line-height: 40px;
+  color: #959595;
+  font-size: 15px;
 }

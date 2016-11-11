@@ -22,9 +22,15 @@
   <div class="choose-result">
     <button class="btn" @click.stop="choose">选择</button>
     <p class="choose-result-cnt">选中了:{{message}}</p>
+    <input type="text">
   </div>
 
-  <picker :list="list" :cur-idx="curIdx" :open="open" :cancel="cancel" :confirm="confirm"></picker>
+  <picker :list="list" :cur-idx="curIdx" :open="open" :cancel="cancel" :confirm="confirm">
+    <div class="picker-header">
+      <div class="picker-title">品名</div>
+      <div class="picker-title">品类</div>
+    </div>
+  </picker>
 </div>
 <script src="dist/index.js"></script>
 </body>

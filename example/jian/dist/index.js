@@ -127,7 +127,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	
 	// module
-	exports.push([module.id, ".choose-result {\n  text-align: center;\n  position: absolute;\n  top: 100px;\n  width: 100%;\n}\n\n.choose-result .choose-result-cnt {\n  margin-top: 30px;\n}\n\n.picker-wrapper {\n  position: fixed;\n  width: 100%;\n  z-index: 1;\n  bottom: 0;\n  transition: transform 0.3s linear;\n  -webkit-transition: -webkit-transform 0.3s linear;\n  transform: translate3d(0, 250px, 0);\n  -webkit-transform: translate3d(0, 250px, 0);\n}\n\n.picker-wrapper.open {\n  transform: translate3d(0, 0, 0);\n  -webkit-transform: translate3d(0, 0, 0);\n}\n\n.picker-wrapper .picker-action {\n  box-sizing: border-box;\n  background-color: #fff;\n  padding: 5px 10px;\n  box-shadow: 0 -1px 3px 1px #ddd;\n  border-bottom: 1px solid #e5e5e5;\n}\n\n.picker-wrapper .picker-action .btn {\n  display: inline-block;\n  outline: none;\n  line-height: 1.42;\n  padding: 6px 12px;\n  font-size: 16px;\n  font-weight: normal;\n  text-align: center;\n  vertical-align: middle;\n  cursor: pointer;\n  color: #316CCB;\n  text-decoration: none;\n  white-space: nowrap;\n}\n\n.picker-wrapper .picker-action .btn.btn-confirm {\n  float: right;\n}", ""]);
+	exports.push([module.id, ".choose-result {\n  text-align: center;\n  position: absolute;\n  top: 100px;\n  width: 100%;\n}\n\n.choose-result .choose-result-cnt {\n  margin-top: 30px;\n}\n\n\n.picker-header {\n  height: 40px;\n  width: 100%;\n  background-color: #F5F5F5;\n}\n\n.picker-header .picker-title {\n  float: left;\n  width: 50%;\n  text-align: center;\n  line-height: 40px;\n  color: #959595;\n  font-size: 15px;\n}", ""]);
 	
 	// exports
 
