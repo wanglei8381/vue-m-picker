@@ -1,13 +1,19 @@
-<div v-touch:tap="cancel" class="picker-container" :class="{'open':open}">
-  <div class="picker-wrapper" v-touch:tap.stop>
-    <div class="picker-action">
-      <span class="picker-btn" v-touch:tap="cancel">取消</span>
-      <span class="picker-btn picker-btn-confirm" v-touch:tap="choose">确定</span>
-    </div>
+<div>
+  <div class="open-wrapper"  v-touch:tap="openWin">
     <slot></slot>
-    <div :style="style" v-for="(item, index) in datas" :key="index">
-      <wag_picker_cpt :list="datas[index]" @picker="picker" :alias="index" :cur-idx="curIdxs[index]" :label="label"></wag_picker_cpt>
-    </div>
+  </div>
+  <div v-touch:tap="close" class="picker-container" :class="{'open':open}">
+    <div class="picker-wrapper" v-touch:tap.stop>
+      <div class="picker-action">
+        <span class="picker-btn" v-touch:tap="close">取消</span>
+        <span class="picker-btn picker-btn-confirm" v-touch:tap="choose">确定</span>
+      </div>
+      <slot name="header"></slot>
+      <div :style="style" v-for="(item, index) in datas" :key="index">
+        <wag_picker_cpt :list="datas[index]" @picker="picker" :alias="index" :cur-idx="curIdxs[index]"
+                        :label="label"></wag_picker_cpt>
+      </div>
 
+    </div>
   </div>
 </div>

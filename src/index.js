@@ -1,7 +1,19 @@
 require('vue').use(require('vue-m-touch'));
 require('./style.css');
+
+var defaultFnObj = {
+    type: Function,
+    required: false,
+    default: function () {
+        return function () {
+        };
+    }
+};
 module.exports = {
     template: require('./template.html'),
+    data(){
+        return {open: false}
+    },
     props: {
         list: {
             type: Array,
@@ -26,26 +38,9 @@ module.exports = {
                 return [0];
             }
         },
-        open: {
-            type: Boolean,
-            required: true
-        },
-        cancel: {
-            type: Function,
-            required: true
-        },
-        confirm: {
-            type: Function,
-            required: true
-        },
-        change: {
-            type: Function,
-            required: false,
-            default: function () {
-                return function () {
-                };
-            }
-        }
+        cancel: defaultFnObj,
+        confirm: defaultFnObj,
+        change: defaultFnObj
     },
     computed: {
         datas(){
@@ -53,7 +48,12 @@ module.exports = {
             if (!(this.list[0] instanceof Array)) {
                 list = [this.list];
             }
-            return list;
+            var _this= this;
+            return list.map(function (arr) {
+                return arr.map(function (item) {
+                    return typeof item === 'string' ? item : item[_this.label];
+                });
+            });
         },
         style(){
             var length = this.datas.length;
@@ -63,17 +63,34 @@ module.exports = {
             }
         }
     },
+    watch: {
+        curIdxs(val){
+            this.cache = val;
+        }
+    },
     methods: {
+        openWin(){
+            this.open = true;
+        },
+        close(){
+            this.open = false;
+            this.cancel();
+        },
         choose(){
+            this.open = false;
             this.confirm.apply(this, this.cache);
         },
-        picker(item, index, alias){
-            this.cache[alias] = item;
-            this.change(item, index, alias);
+        picker(index, alias){
+            this.cache[alias] = index;
+            this.change(index, alias);
         }
     },
     mounted() {
-        this.cache = [];
+
+        this.$nextTick(function () {
+            this.cache = this.curIdxs;
+        });
+
     },
     components: {
         'wag_picker_cpt': require('./picker')

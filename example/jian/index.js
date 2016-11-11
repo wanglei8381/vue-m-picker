@@ -7,55 +7,36 @@ new Vue({
         return {
             list: [
                 [
-                {label: '语文', value: '1'},
-                {label: '数学', value: '1'},
-                {label: '英语', value: '1'},
-                {label: '历史', value: '1'},
-                {label: '政治', value: '1'},
-                {label: 'css', value: '1'},
-                {label: '几何', value: '1'},
-                {label: '语文', value: '1'},
-                {label: '数学', value: '1'},
-                {label: '英语', value: '1'},
-                {label: '历史', value: '1'},
-                {label: '政治', value: '1'},
-                {label: 'css', value: '1'},
-                {label: '几何', value: '1'}
-            ], [
-                {label: '苹果', value: '1'},
-                {label: '桃子', value: '1'},
-                {label: '梨', value: '1'},
-                {label: '香蕉', value: '1'},
-                {label: '几何', value: '1'}
+                    '语文',
+                    '数学',
+                    '英语',
+                    '历史',
+                    '政治',
+                    'css',
+                    '几何',
+                    '语文',
+                    '数学',
+                    '英语',
+                    '历史',
+                    '政治',
+                    'css',
+                    '几何',],
+                [
+                    '苹果',
+                    '桃子',
+                    '梨',
+                    '香蕉',
+                    '几何'
+                ]
             ]
-            ],
-            curIdxs: [1, 3],
-            message: '',
-            picker: {},
-            open: false
         };
     },
     methods: {
-        choose: function () {
-            this.open = true;
+        confirm: function (i, j) {
+            console.log(i, j);
         },
-        cancel: function () {
-            console.log('cancel');
-            this.open = false;
-        },
-        confirm: function (item, index) {
-            this.open = false;
-            console.log(item, index);
-            this.picker = item;
-        },
-        change(item, index, alias){
-            console.log(item, index, alias);
+        change(index, alias){
+            console.log(index, alias);
         }
-    },
-    mounted(){
-        // this.curIdx=2;
-        // window.addEventListener('click', ()=> {
-        //     this.open = false;
-        // });
     }
 });

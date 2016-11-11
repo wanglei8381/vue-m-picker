@@ -17,6 +17,7 @@
   -webkit-transition-duration: 400ms;
   transition-duration: 400ms;
   opacity: 0;
+  text-align: left;
 }
 .picker-container.open {
   z-index: 1;
@@ -116,4 +117,7 @@
 .m-picker .m-picker-inner .m-picker-list li.highlight {
   color: #353535;
   font-weight: bold;
+}
+.open-wrapper {
+  display: inline-block;
 }

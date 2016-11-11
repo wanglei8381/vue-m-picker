@@ -63,35 +63,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    el: '#mod-container',
 	    data: function data() {
 	        return {
-	            list: [[{ label: '语文', value: '1' }, { label: '数学', value: '1' }, { label: '英语', value: '1' }, { label: '历史', value: '1' }, { label: '政治', value: '1' }, { label: 'css', value: '1' }, { label: '几何', value: '1' }, { label: '语文', value: '1' }, { label: '数学', value: '1' }, { label: '英语', value: '1' }, { label: '历史', value: '1' }, { label: '政治', value: '1' }, { label: 'css', value: '1' }, { label: '几何', value: '1' }], [{ label: '苹果', value: '1' }, { label: '桃子', value: '1' }, { label: '梨', value: '1' }, { label: '香蕉', value: '1' }, { label: '几何', value: '1' }]],
-	            curIdxs: [1, 3],
-	            message: '',
-	            picker: {},
-	            open: false
+	            list: [['语文', '数学', '英语', '历史', '政治', 'css', '几何', '语文', '数学', '英语', '历史', '政治', 'css', '几何'], ['苹果', '桃子', '梨', '香蕉', '几何']]
 	        };
 	    },
 	    methods: {
-	        choose: function choose() {
-	            this.open = true;
+	        confirm: function confirm(i, j) {
+	            console.log(i, j);
 	        },
-	        cancel: function cancel() {
-	            console.log('cancel');
-	            this.open = false;
-	        },
-	        confirm: function confirm(item, index) {
-	            this.open = false;
-	            console.log(item, index);
-	            this.picker = item;
-	        },
-	        change: function change(item, index, alias) {
-	            console.log(item, index, alias);
+	        change: function change(index, alias) {
+	            console.log(index, alias);
 	        }
-	    },
-	    mounted: function mounted() {
-	        // this.curIdx=2;
-	        // window.addEventListener('click', ()=> {
-	        //     this.open = false;
-	        // });
 	    }
 	});
 
@@ -7972,8 +7953,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	__webpack_require__(5).use(__webpack_require__(7));
 	__webpack_require__(17);
+	
+	var defaultFnObj = {
+	    type: Function,
+	    required: false,
+	    default: function _default() {
+	        return function () {};
+	    }
+	};
 	module.exports = {
 	    template: __webpack_require__(11),
+	    data: function data() {
+	        return { open: false };
+	    },
+	
 	    props: {
 	        list: {
 	            type: Array,
@@ -7998,25 +7991,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return [0];
 	            }
 	        },
-	        open: {
-	            type: Boolean,
-	            required: true
-	        },
-	        cancel: {
-	            type: Function,
-	            required: true
-	        },
-	        confirm: {
-	            type: Function,
-	            required: true
-	        },
-	        change: {
-	            type: Function,
-	            required: false,
-	            default: function _default() {
-	                return function () {};
-	            }
-	        }
+	        cancel: defaultFnObj,
+	        confirm: defaultFnObj,
+	        change: defaultFnObj
 	    },
 	    computed: {
 	        datas: function datas() {
@@ -8024,7 +8001,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (!(this.list[0] instanceof Array)) {
 	                list = [this.list];
 	            }
-	            return list;
+	            var _this = this;
+	            return list.map(function (arr) {
+	                return arr.map(function (item) {
+	                    return typeof item === 'string' ? item : item[_this.label];
+	                });
+	            });
 	        },
 	        style: function style() {
 	            var length = this.datas.length;
@@ -8034,17 +8016,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	            };
 	        }
 	    },
+	    watch: {
+	        curIdxs: function curIdxs(val) {
+	            this.cache = val;
+	        }
+	    },
 	    methods: {
+	        openWin: function openWin() {
+	            this.open = true;
+	        },
+	        close: function close() {
+	            this.open = false;
+	            this.cancel();
+	        },
 	        choose: function choose() {
+	            this.open = false;
 	            this.confirm.apply(this, this.cache);
 	        },
-	        picker: function picker(item, index, alias) {
-	            this.cache[alias] = item;
-	            this.change(item, index, alias);
+	        picker: function picker(index, alias) {
+	            this.cache[alias] = index;
+	            this.change(index, alias);
 	        }
 	    },
 	    mounted: function mounted() {
-	        this.cache = [];
+	
+	        this.$nextTick(function () {
+	            this.cache = this.curIdxs;
+	        });
 	    },
 	
 	    components: {
@@ -8508,7 +8506,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 11 */
 /***/ function(module, exports) {
 
-	module.exports = "<div v-touch:tap=\"cancel\" class=\"picker-container\" :class=\"{'open':open}\">\n  <div class=\"picker-wrapper\" v-touch:tap.stop>\n    <div class=\"picker-action\">\n      <span class=\"picker-btn\" v-touch:tap=\"cancel\">取消</span>\n      <span class=\"picker-btn picker-btn-confirm\" v-touch:tap=\"choose\">确定</span>\n    </div>\n    <slot></slot>\n    <div :style=\"style\" v-for=\"(item, index) in datas\" :key=\"index\">\n      <wag_picker_cpt :list=\"datas[index]\" @picker=\"picker\" :alias=\"index\" :cur-idx=\"curIdxs[index]\" :label=\"label\"></wag_picker_cpt>\n    </div>\n\n  </div>\n</div>";
+	module.exports = "<div>\n  <div class=\"open-wrapper\"  v-touch:tap=\"openWin\">\n    <slot></slot>\n  </div>\n  <div v-touch:tap=\"close\" class=\"picker-container\" :class=\"{'open':open}\">\n    <div class=\"picker-wrapper\" v-touch:tap.stop>\n      <div class=\"picker-action\">\n        <span class=\"picker-btn\" v-touch:tap=\"close\">取消</span>\n        <span class=\"picker-btn picker-btn-confirm\" v-touch:tap=\"choose\">确定</span>\n      </div>\n      <slot name=\"header\"></slot>\n      <div :style=\"style\" v-for=\"(item, index) in datas\" :key=\"index\">\n        <wag_picker_cpt :list=\"datas[index]\" @picker=\"picker\" :alias=\"index\" :cur-idx=\"curIdxs[index]\"\n                        :label=\"label\"></wag_picker_cpt>\n      </div>\n\n    </div>\n  </div>\n</div>";
 
 /***/ },
 /* 12 */
@@ -8531,23 +8529,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        };
 	    },
 	
-	    props: {
-	        alias: [String, Number],
-	        list: {
-	            type: Array,
-	            required: true
-	        },
-	        label: {
-	            type: String,
-	            required: false,
-	            default: 'label'
-	        },
-	        curIdx: {
-	            type: Number,
-	            required: false,
-	            default: 0
-	        }
-	    },
+	    props: ['alias', 'list', 'label', 'curIdx'],
 	    watch: {
 	        list: function list() {
 	            this.curIndex = 0;
@@ -8581,7 +8563,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var distinct = this.distinct;
 	            this.distinct = this.internalCal(distinct, true);
 	            this.$container.style.webkitTransition = '100ms ease-out';
-	            this.$emit('picker', JSON.parse(JSON.stringify(this.list[this.curIndex])), this.curIndex, this.alias);
+	            this.$emit('picker', this.curIndex, this.alias);
 	        },
 	        internalCal: function internalCal(distinct, isEnd) {
 	            var threshold = this.threshold;
@@ -8945,7 +8927,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 16 */
 /***/ function(module, exports) {
 
-	module.exports = "<div class=\"m-picker\">\n  <div class=\"m-picker-inner\">\n    <div class=\"m-picker-rule\"></div>\n    <ul class=\"m-picker-list\">\n      <li v-for=\"(item, index) of list\" :key=\"index\"\n          :style=\"{transform: 'rotateX(' + (-threshold * index) +'deg) translateZ(90px)'}\">{{item[label]}}\n      </li>\n    </ul>\n  </div>\n</div>";
+	module.exports = "<div class=\"m-picker\">\n  <div class=\"m-picker-inner\">\n    <div class=\"m-picker-rule\"></div>\n    <ul class=\"m-picker-list\">\n      <li v-for=\"(item, index) of list\" :key=\"index\"\n          :style=\"{transform: 'rotateX(' + (-threshold * index) +'deg) translateZ(90px)'}\">{{item}}\n      </li>\n    </ul>\n  </div>\n</div>";
 
 /***/ },
 /* 17 */
@@ -8982,7 +8964,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	
 	// module
-	exports.push([module.id, "/**\n   transform\n       1: transform的值有先后顺序,如rotateX(40deg) translateZ(60px);表示先在X轴旋转40度,再在Z轴上移动60px\n           如果translateZ(60px) rotateX(40deg);表示先在Z轴上移动60px,再在X轴旋转40度\n      2: transform-origin要和transform一起使用才有效\n*/\n.picker-container {\n  position: fixed;\n  top: 0;\n  left: 0;\n  z-index: -1;\n  width: 100%;\n  height: 100%;\n  background-color: rgba(0,0,0,0.4);\n  -webkit-transition-duration: opacity z-index;\n  transition-duration: opacity z-index;\n  -webkit-transition-duration: 400ms;\n  transition-duration: 400ms;\n  opacity: 0;\n}\n.picker-container.open {\n  z-index: 1;\n  opacity: 1;\n}\n.picker-container.open .picker-wrapper {\n  transform: translate3d(0, 0, 0);\n  -webkit-transform: translate3d(0, 0, 0);\n}\n.picker-container .picker-wrapper {\n  position: fixed;\n  width: 100%;\n  z-index: 1;\n  bottom: 0;\n  left: 0;\n  transition: transform 0.3s linear;\n  -webkit-transition: -webkit-transform 0.3s linear;\n  transform: translate3d(0, 250px, 0);\n  -webkit-transform: translate3d(0, 250px, 0);\n}\n.picker-container .picker-wrapper .picker-action {\n  box-sizing: border-box;\n  background-color: #fff;\n  padding: 5px 10px;\n  box-shadow: 0 -1px 3px 1px #ddd;\n  border-bottom: 1px solid #e5e5e5;\n}\n.picker-container .picker-wrapper .picker-action .picker-btn {\n  display: inline-block;\n  outline: none;\n  line-height: 1.42;\n  padding: 6px 12px;\n  font-size: 16px;\n  font-weight: normal;\n  text-align: center;\n  vertical-align: middle;\n  cursor: pointer;\n  color: #316ccb;\n  text-decoration: none;\n  white-space: nowrap;\n}\n.picker-container .picker-wrapper .picker-action .picker-btn.picker-btn-confirm {\n  float: right;\n}\n.m-picker,\n.m-picker * {\n  box-sizing: border-box;\n}\n.m-picker {\n  height: 200px;\n  background-color: #fff;\n}\n.m-picker .m-picker-inner {\n  position: relative;\n  height: 100%;\n  width: 100%;\n  -webkit-mask-box-image: -webkit-linear-gradient(bottom, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent);\n  -webkit-mask-box-image: linear-gradient(top, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent);\n}\n.m-picker .m-picker-inner .m-picker-list,\n.m-picker .m-picker-inner .m-picker-rule {\n  z-index: 1;\n  position: absolute;\n  top: 50%;\n  margin-top: -18px;\n  width: 100%;\n  list-style: none;\n  padding: 0;\n  line-height: 36px;\n  height: 36px;\n}\n.m-picker .m-picker-inner .m-picker-rule {\n  z-index: 2;\n  border-top: 1px solid rgba(0,0,0,0.1);\n  border-bottom: 1px solid rgba(0,0,0,0.1);\n}\n.m-picker .m-picker-inner .m-picker-list {\n  transform-style: preserve-3d;\n  -webkit-transform-style: preserve-3d;\n}\n.m-picker .m-picker-inner .m-picker-list li {\n  display: inline-block;\n  position: absolute;\n  width: 100%;\n  text-align: center;\n  font-size: 16px;\n  font-family: \"Helvetica Neue\", \"Helvetica\", \"Arial\", \"sans-serif\";\n  color: #959595;\n/* 超出的部分省略 */\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n/* 元素不面向屏幕时是否可见 */\n  backface-visibility: hidden;\n  -webkit-backface-visibility: hidden;\n}\n.m-picker .m-picker-inner .m-picker-list li.highlight {\n  color: #353535;\n  font-weight: bold;\n}\n", ""]);
+	exports.push([module.id, "/**\n   transform\n       1: transform的值有先后顺序,如rotateX(40deg) translateZ(60px);表示先在X轴旋转40度,再在Z轴上移动60px\n           如果translateZ(60px) rotateX(40deg);表示先在Z轴上移动60px,再在X轴旋转40度\n      2: transform-origin要和transform一起使用才有效\n*/\n.picker-container {\n  position: fixed;\n  top: 0;\n  left: 0;\n  z-index: -1;\n  width: 100%;\n  height: 100%;\n  background-color: rgba(0,0,0,0.4);\n  -webkit-transition-duration: opacity z-index;\n  transition-duration: opacity z-index;\n  -webkit-transition-duration: 400ms;\n  transition-duration: 400ms;\n  opacity: 0;\n  text-align: left;\n}\n.picker-container.open {\n  z-index: 1;\n  opacity: 1;\n}\n.picker-container.open .picker-wrapper {\n  transform: translate3d(0, 0, 0);\n  -webkit-transform: translate3d(0, 0, 0);\n}\n.picker-container .picker-wrapper {\n  position: fixed;\n  width: 100%;\n  z-index: 1;\n  bottom: 0;\n  left: 0;\n  transition: transform 0.3s linear;\n  -webkit-transition: -webkit-transform 0.3s linear;\n  transform: translate3d(0, 250px, 0);\n  -webkit-transform: translate3d(0, 250px, 0);\n}\n.picker-container .picker-wrapper .picker-action {\n  box-sizing: border-box;\n  background-color: #fff;\n  padding: 5px 10px;\n  box-shadow: 0 -1px 3px 1px #ddd;\n  border-bottom: 1px solid #e5e5e5;\n}\n.picker-container .picker-wrapper .picker-action .picker-btn {\n  display: inline-block;\n  outline: none;\n  line-height: 1.42;\n  padding: 6px 12px;\n  font-size: 16px;\n  font-weight: normal;\n  text-align: center;\n  vertical-align: middle;\n  cursor: pointer;\n  color: #316ccb;\n  text-decoration: none;\n  white-space: nowrap;\n}\n.picker-container .picker-wrapper .picker-action .picker-btn.picker-btn-confirm {\n  float: right;\n}\n.m-picker,\n.m-picker * {\n  box-sizing: border-box;\n}\n.m-picker {\n  height: 200px;\n  background-color: #fff;\n}\n.m-picker .m-picker-inner {\n  position: relative;\n  height: 100%;\n  width: 100%;\n  -webkit-mask-box-image: -webkit-linear-gradient(bottom, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent);\n  -webkit-mask-box-image: linear-gradient(top, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent);\n}\n.m-picker .m-picker-inner .m-picker-list,\n.m-picker .m-picker-inner .m-picker-rule {\n  z-index: 1;\n  position: absolute;\n  top: 50%;\n  margin-top: -18px;\n  width: 100%;\n  list-style: none;\n  padding: 0;\n  line-height: 36px;\n  height: 36px;\n}\n.m-picker .m-picker-inner .m-picker-rule {\n  z-index: 2;\n  border-top: 1px solid rgba(0,0,0,0.1);\n  border-bottom: 1px solid rgba(0,0,0,0.1);\n}\n.m-picker .m-picker-inner .m-picker-list {\n  transform-style: preserve-3d;\n  -webkit-transform-style: preserve-3d;\n}\n.m-picker .m-picker-inner .m-picker-list li {\n  display: inline-block;\n  position: absolute;\n  width: 100%;\n  text-align: center;\n  font-size: 16px;\n  font-family: \"Helvetica Neue\", \"Helvetica\", \"Arial\", \"sans-serif\";\n  color: #959595;\n/* 超出的部分省略 */\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n/* 元素不面向屏幕时是否可见 */\n  backface-visibility: hidden;\n  -webkit-backface-visibility: hidden;\n}\n.m-picker .m-picker-inner .m-picker-list li.highlight {\n  color: #353535;\n  font-weight: bold;\n}\n.open-wrapper {\n  display: inline-block;\n}\n", ""]);
 	
 	// exports
 
