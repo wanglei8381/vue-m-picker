@@ -18,17 +18,17 @@
     "url": "git@github.com:wanglei8381/vue-m-picker.git/issues"
   },
   "scripts": {
-    "move": "cp -R src/style.css src/template.html dist/",
+    "move": "cp -R src/. dist/",
     "compile": "babel -d dist/ src/ --presets es2015",
     "prepublish": "npm run move && npm run compile"
   },
   "dependencies": {
     "super-animation": "^0.0.6",
     "super-touch": "^0.0.4",
-    "vue": "^2.0.2",
     "vue-m-touch": "0.0.6"
   },
   "devDependencies": {
+    "vue": "^2.0.2",
     "babel-core": "^6.9.0",
     "babel-loader": "^6.2.4",
     "babel-plugin-transform-runtime": "^6.9.0",

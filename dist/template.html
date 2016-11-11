@@ -1,10 +1,14 @@
-<div class="m-picker">
-  <div class="m-picker-inner">
-    <div class="m-picker-rule"></div>
-    <ul class="m-picker-list">
-      <li v-for="(item, index) of list" :key="index"
-          :style="{transform: 'rotateX(' + (-threshold * index) +'deg) translateZ(90px)'}">{{item[label]}}
-      </li>
-    </ul>
+<div v-touch:tap="cancel" class="picker-container" :class="{'open':open}">
+  <div class="picker-wrapper" v-touch:tap.stop>
+    <div class="picker-action">
+      <span class="btn btn-cancle" v-touch:tap="cancel">取消</span>
+      <span class="btn btn-confirm" v-touch:tap="choose">确定</span>
+    </div>
+    <slot></slot>
+    <div :style="style" v-for="(item, index) in datas" :key="index">
+      <wag_picker_cpt :list="datas[index]" @picker="picker" :alias="index" :cur-idx="curIdxs[index]" :label="label"
+                      :value="value"></wag_picker_cpt>
+    </div>
+
   </div>
 </div>

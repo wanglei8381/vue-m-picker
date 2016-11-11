@@ -12,8 +12,10 @@
   width: 100%;
   height: 100%;
   background-color: rgba(0,0,0,0.4);
-  -webkit-transition: opacity 400ms;
-  transition: opacity 400ms;
+  -webkit-transition-duration: opacity z-index;
+  transition-duration: opacity z-index;
+  -webkit-transition-duration: 400ms;
+  transition-duration: 400ms;
   opacity: 0;
 }
 .picker-container.open {
@@ -42,7 +44,7 @@
   box-shadow: 0 -1px 3px 1px #ddd;
   border-bottom: 1px solid #e5e5e5;
 }
-.picker-container .picker-wrapper .picker-action .btn {
+.picker-container .picker-wrapper .picker-action .picker-btn {
   display: inline-block;
   outline: none;
   line-height: 1.42;
@@ -56,7 +58,7 @@
   text-decoration: none;
   white-space: nowrap;
 }
-.picker-container .picker-wrapper .picker-action .btn.btn-confirm {
+.picker-container .picker-wrapper .picker-action .picker-btn.picker-btn-confirm {
   float: right;
 }
 .m-picker,

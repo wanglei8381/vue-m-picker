@@ -1,14 +1,7 @@
+require('vue').use(require('vue-m-touch'));
+require('./style.css');
 module.exports = {
     template: require('./template.html'),
-    data(){
-        return {
-            distinct: 0,
-            speed: 0.5,
-            curIndex: 0,
-            threshold: 20,
-            animatePause: true
-        }
-    },
     props: {
         list: {
             type: Array,
@@ -19,15 +12,19 @@ module.exports = {
             required: false,
             default: 'label'
         },
-        value: {
-            type: String,
+        curIdxs: {
+            type: Array,
             required: false,
-            default: 'value'
-        },
-        curIdx: {
-            type: Number,
-            required: false,
-            default: 0
+            default: function () {
+                if (this.list[0] instanceof Array) {
+                    var arr = [];
+                    for (let i = 0; i < this.list.length; i++) {
+                        arr[i] = 0;
+                    }
+                    return arr;
+                }
+                return [0];
+            }
         },
         open: {
             type: Boolean,
@@ -40,14 +37,23 @@ module.exports = {
         confirm: {
             type: Function,
             required: true
+        },
+        change: {
+            type: Function,
+            required: false,
+            default: function () {
+                return function () {
+                };
+            }
         }
     },
     computed: {
         datas(){
             var list = this.list;
-            if (!this.list[0] instanceof Array) {
+            if (!(this.list[0] instanceof Array)) {
                 list = [this.list];
             }
+            return list;
         },
         style(){
             var length = this.datas.length;
@@ -57,44 +63,19 @@ module.exports = {
             }
         }
     },
-    methods: {},
+    methods: {
+        choose(){
+            this.confirm.apply(this, this.cache);
+        },
+        picker(item, index, alias){
+            this.cache[alias] = item;
+            this.change(item, index, alias);
+        }
+    },
     mounted() {
-        this.$nextTick(()=> {
-            this.$options.ready.call(this);
-        })
+        this.cache = [];
     },
     components: {
-        picker: require('./picker')
-    },
-    ready(){
-
-        this.curIndex = this.curIdx;
-        if (this.list.length > 0) {
-            this.reload();
-        }
-
-        var touch = new Touch(this.$el.querySelector('.m-picker'));
-        touch.start();
-        touch.on('touch:start', (res)=> {
-            //暂停执行缓动
-            this.animatePause = true;
-            res.e.preventDefault();
-        });
-
-        touch.on('touch:move', (res)=> {
-            res.e.preventDefault();
-            this.move(res);
-        });
-
-        touch.on('touch:end', (res)=> {
-            res.e.preventDefault();
-            if (Math.abs(res.y1 - res.y2) < this.threshold * 2) {
-                this.end();
-            } else {
-                this.animatePause = false;
-                this.startInertiaScroll(res);
-            }
-
-        });
+        'wag_picker_cpt': require('./picker')
     }
 };

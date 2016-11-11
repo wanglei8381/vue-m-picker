@@ -63,8 +63,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    el: '#mod-container',
 	    data: function data() {
 	        return {
-	            list: [{ label: '语文', value: '1' }, { label: '数学', value: '1' }, { label: '英语', value: '1' }, { label: '历史', value: '1' }, { label: '政治', value: '1' }, { label: 'css', value: '1' }, { label: '几何', value: '1' }, { label: '语文', value: '1' }, { label: '数学', value: '1' }, { label: '英语', value: '1' }, { label: '历史', value: '1' }, { label: '政治', value: '1' }, { label: 'css', value: '1' }, { label: '几何', value: '1' }],
-	            curIdx: 1,
+	            list: [[{ label: '语文', value: '1' }, { label: '数学', value: '1' }, { label: '英语', value: '1' }, { label: '历史', value: '1' }, { label: '政治', value: '1' }, { label: 'css', value: '1' }, { label: '几何', value: '1' }, { label: '语文', value: '1' }, { label: '数学', value: '1' }, { label: '英语', value: '1' }, { label: '历史', value: '1' }, { label: '政治', value: '1' }, { label: 'css', value: '1' }, { label: '几何', value: '1' }], [{ label: '苹果', value: '1' }, { label: '桃子', value: '1' }, { label: '梨', value: '1' }, { label: '香蕉', value: '1' }, { label: '几何', value: '1' }]],
+	            curIdxs: [1, 3],
 	            message: '',
 	            picker: {},
 	            open: false
@@ -82,6 +82,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.open = false;
 	            console.log(item, index);
 	            this.picker = item;
+	        },
+	        change: function change(item, index, alias) {
+	            console.log(item, index, alias);
 	        }
 	    },
 	    mounted: function mounted() {
@@ -127,7 +130,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	
 	// module
-	exports.push([module.id, ".choose-result {\n  text-align: center;\n  position: absolute;\n  top: 100px;\n  width: 100%;\n}\n\n.choose-result .choose-result-cnt {\n  margin-top: 30px;\n}\n\n\n.picker-header {\n  height: 40px;\n  width: 100%;\n  background-color: #F5F5F5;\n}\n\n.picker-header .picker-title {\n  float: left;\n  width: 50%;\n  text-align: center;\n  line-height: 40px;\n  color: #959595;\n  font-size: 15px;\n}", ""]);
+	exports.push([module.id, "\nbody {\n  margin: 0;\n  background: #ddd;\n}\n\n.choose-result {\n  text-align: center;\n  position: absolute;\n  top: 100px;\n  width: 80%;\n  background-color: #fff;\n}\n\n.choose-result .choose-result-cnt {\n  margin-top: 30px;\n}\n\n\ninput {\n  border: 1px solid #5e5e5e;\n  height: 30px;\n  width: 200px;\n}\n\n\n.picker-header {\n  height: 40px;\n  width: 100%;\n  background-color: #F5F5F5;\n}\n\n.picker-header .picker-title {\n  float: left;\n  width: 50%;\n  text-align: center;\n  line-height: 40px;\n  color: #959595;\n  font-size: 15px;\n}", ""]);
 	
 	// exports
 
@@ -7967,23 +7970,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	__webpack_require__(7);
-	
-	var Touch = __webpack_require__(9);
-	var quart = __webpack_require__(12).quart;
-	__webpack_require__(5).use(__webpack_require__(15));
+	__webpack_require__(5).use(__webpack_require__(7));
+	__webpack_require__(17);
 	module.exports = {
-	    template: __webpack_require__(16),
-	    data: function data() {
-	        return {
-	            distinct: 0,
-	            speed: 0.5,
-	            curIndex: 0,
-	            threshold: 20,
-	            animatePause: true
-	        };
-	    },
-	
+	    template: __webpack_require__(11),
 	    props: {
 	        list: {
 	            type: Array,
@@ -7994,15 +7984,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	            required: false,
 	            default: 'label'
 	        },
-	        value: {
-	            type: String,
+	        curIdxs: {
+	            type: Array,
 	            required: false,
-	            default: 'value'
-	        },
-	        curIdx: {
-	            type: Number,
-	            required: false,
-	            default: 0
+	            default: function _default() {
+	                if (this.list[0] instanceof Array) {
+	                    var arr = [];
+	                    for (var i = 0; i < this.list.length; i++) {
+	                        arr[i] = 0;
+	                    }
+	                    return arr;
+	                }
+	                return [0];
+	            }
 	        },
 	        open: {
 	            type: Boolean,
@@ -8015,167 +8009,46 @@ return /******/ (function(modules) { // webpackBootstrap
 	        confirm: {
 	            type: Function,
 	            required: true
-	        }
-	    },
-	    watch: {
-	        list: function list() {
-	            this.curIndex = 0;
-	            this.$nextTick(this.reload);
 	        },
-	        curIdx: function curIdx(val, oval) {
-	            this.curIndex = val;
-	            this.distinct = val * this.threshold;
-	            //当下标变化时,自动滚动到指定位置
-	            if (this.$list) {
-	                this.$list[oval].classList.remove('highlight');
-	                this.$list[val].classList.add('highlight');
-	            }
-	            if (this.$container) {
-	                this.$container.style.webkitTransform = 'rotateX(' + this.distinct + 'deg)';
+	        change: {
+	            type: Function,
+	            required: false,
+	            default: function _default() {
+	                return function () {};
 	            }
 	        }
 	    },
 	    computed: {
-	        maxVal: function maxVal() {
-	            return (this.list.length - 1) * this.threshold;
+	        datas: function datas() {
+	            var list = this.list;
+	            if (!(this.list[0] instanceof Array)) {
+	                list = [this.list];
+	            }
+	            return list;
+	        },
+	        style: function style() {
+	            var length = this.datas.length;
+	            return {
+	                width: 100 / length + '%',
+	                float: 'left'
+	            };
 	        }
 	    },
 	    methods: {
 	        choose: function choose() {
-	            this.confirm(JSON.parse(JSON.stringify(this.list[this.curIndex])), this.curIndex);
+	            this.confirm.apply(this, this.cache);
 	        },
-	        move: function move(res) {
-	            var distinct = this.distinct;
-	            distinct += res.yrange * this.speed;
-	            this.distinct = this.internalCal(distinct);
-	        },
-	        end: function end() {
-	            var distinct = this.distinct;
-	            this.distinct = this.internalCal(distinct, true);
-	            this.$container.style.webkitTransition = '100ms ease-out';
-	            // this.$emit('picker', );
-	        },
-	        internalCal: function internalCal(distinct, isEnd) {
-	            var threshold = this.threshold;
-	            var baseNum = isEnd ? -0 : threshold * 2;
-	            if (distinct > this.maxVal + baseNum) {
-	                distinct = this.maxVal + baseNum;
-	            }
-	            if (distinct < -baseNum) {
-	                distinct = -baseNum;
-	            }
-	
-	            var base = parseInt(distinct / threshold);
-	            var min = threshold * base;
-	            var max = min + threshold;
-	            var interval = max;
-	            if (distinct - min <= max - distinct) {
-	                interval = min;
-	            }
-	            distinct = isEnd ? interval : distinct;
-	            if (distinct >= 0 && distinct <= this.maxVal) {
-	                //选中的下表
-	                var idx = interval / threshold;
-	                this.$list[this.curIndex].classList.remove('highlight');
-	                this.$list[idx].classList.add('highlight');
-	                this.curIndex = idx;
-	            }
-	
-	            this.$container.style.webkitTransform = 'rotateX(' + distinct + 'deg)';
-	            this.showCal();
-	            return distinct;
-	        },
-	        showCal: function showCal() {
-	            //小于13全部显示
-	            //if (this.list.length <= 13) return;
-	            var min = this.curIndex - 5;
-	            var max = this.curIndex + 5;
-	            for (var i = 0, len = this.list.length; i < len; i++) {
-	                this.$list[i].style.visibility = i >= min && i <= max ? 'visible' : 'hidden';
-	            }
-	        },
-	        startInertiaScroll: function startInertiaScroll(res) {
-	            var _this = this;
-	
-	            //缓动
-	            var v = (res.y1 - res.y2) / res.spend;
-	            var duration = Math.abs(v / 0.0006); //速度减到0
-	            var dist = v * duration / 2; //最后执行的距离
-	            var _distinct = this.distinct;
-	            var minVal = -this.threshold * 2;
-	            var maxVal = this.maxVal + this.threshold * 2;
-	            var index = 0,
-	                r = 0;
-	            duration /= 5;
-	            var _inertiaMove = function _inertiaMove() {
-	                if (_this.animatePause) {
-	                    _this.distinct = _distinct;
-	                    return;
-	                }
-	                r = quart.easeOut(index++, _this.distinct, dist, duration);
-	                _distinct = _this.internalCal(r);
-	                if (index < duration && r >= minVal && r <= maxVal) {
-	                    requestAnimationFrame(_inertiaMove);
-	                } else {
-	                    _this.animatePause = true;
-	                    _this.distinct = _distinct;
-	                    _this.end();
-	                }
-	            };
-	            _inertiaMove();
-	        },
-	        reload: function reload() {
-	            var _this2 = this;
-	
-	            //当数据变化时,重新加载数据
-	            this.$container = this.$el.querySelector('.m-picker-list');
-	            this.$list = this.$container.querySelectorAll('li');
-	            this.$list[this.curIndex].classList.add('highlight');
-	            this.distinct = this.curIndex * this.threshold;
-	            this.showCal();
-	            this.$container.style.webkitTransform = 'rotateX(' + this.distinct + 'deg)';
-	            this.$container.addEventListener("webkitTransitionEnd", function () {
-	                _this2.$container.style.webkitTransition = null;
-	            });
+	        picker: function picker(item, index, alias) {
+	            this.cache[alias] = item;
+	            this.change(item, index, alias);
 	        }
 	    },
 	    mounted: function mounted() {
-	        var _this3 = this;
-	
-	        this.$nextTick(function () {
-	            _this3.$options.ready.call(_this3);
-	        });
+	        this.cache = [];
 	    },
-	    ready: function ready() {
-	        var _this4 = this;
 	
-	        this.curIndex = this.curIdx;
-	        if (this.list.length > 0) {
-	            this.reload();
-	        }
-	
-	        var touch = new Touch(this.$el.querySelector('.m-picker'));
-	        touch.start();
-	        touch.on('touch:start', function (res) {
-	            //暂停执行缓动
-	            _this4.animatePause = true;
-	            res.e.preventDefault();
-	        });
-	
-	        touch.on('touch:move', function (res) {
-	            res.e.preventDefault();
-	            _this4.move(res);
-	        });
-	
-	        touch.on('touch:end', function (res) {
-	            res.e.preventDefault();
-	            if (Math.abs(res.y1 - res.y2) < _this4.threshold * 2) {
-	                _this4.end();
-	            } else {
-	                _this4.animatePause = false;
-	                _this4.startInertiaScroll(res);
-	            }
-	        });
+	    components: {
+	        'wag_picker_cpt': __webpack_require__(12)
 	    }
 	};
 
@@ -8183,49 +8056,87 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// style-loader: Adds some css to the DOM by adding a <style> tag
+	var Touch = __webpack_require__(8);
 	
-	// load the styles
-	var content = __webpack_require__(8);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(4)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../node_modules/css-loader/index.js!./style.css", function() {
-				var newContent = require("!!./../node_modules/css-loader/index.js!./style.css");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
+	var app = module.exports = {};
+	app.install = function (Vue, options) {
+	
+	    options = options || {};
+	    var longTapTime = options.longTapTime || 350;
+	
+	    Vue.directive('touch', {
+	        bind: function (el, binding, vnode) {
+	            var touch = el.touch = new Touch(el);
+	            var longTapTimeout = null;
+	            var handler = function (res) {
+	                var e = res.e;
+	                if (typeof binding.value === 'function') {
+	                    var _handler = function () {
+	                        if (binding.modifiers.self) {
+	                            if (e.target === e.currentTarget) {
+	                                binding.value(e);
+	                            }
+	                        } else {
+	                            binding.value(e);
+	                        }
+	                    }
+	
+	                    switch (binding.arg) {
+	                        case 'tap':
+	                            if (Math.abs(res.x1 - res.x2) < 30 && Math.abs(res.y1 - res.y2) < 30) {
+	                                _handler();
+	                            }
+	                            break;
+	                        case 'longtap':
+	                            _handler();
+	                            break;
+	                    }
+	                }
+	            };
+	
+	            var modify = function (e) {
+	                if (binding.modifiers.stop) {
+	                    e.stopPropagation();
+	                }
+	                if (binding.modifiers.prevent) {
+	                    e.preventDefault();
+	                }
+	            }
+	
+	            touch.on('touch:start', function (res) {
+	                modify(res.e);
+	                longTapTimeout = setTimeout(function () {
+	                    handler(res);
+	                }, longTapTime);
+	            });
+	
+	            touch.on('touch:move', function () {
+	                clearTimeout(longTapTimeout);
+	            });
+	
+	            touch.on('touch:end', function (res) {
+	                clearTimeout(longTapTimeout);
+	                modify(res.e);
+	                handler(res);
+	            });
+	
+	            touch.start();
+	        },
+	        unbind: function (el) {
+	            //删除dom监听事件
+	            el.touch._remove();
+	            el.touch = null;
+	        }
+	    });
 	}
 
 /***/ },
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(3)();
-	// imports
-	
-	
-	// module
-	exports.push([module.id, "/**\n   transform\n       1: transform的值有先后顺序,如rotateX(40deg) translateZ(60px);表示先在X轴旋转40度,再在Z轴上移动60px\n           如果translateZ(60px) rotateX(40deg);表示先在Z轴上移动60px,再在X轴旋转40度\n      2: transform-origin要和transform一起使用才有效\n*/\n.picker-container {\n  position: fixed;\n  top: 0;\n  left: 0;\n  z-index: -1;\n  width: 100%;\n  height: 100%;\n  background-color: rgba(0,0,0,0.4);\n  -webkit-transition: opacity 400ms;\n  transition: opacity 400ms;\n  opacity: 0;\n}\n.picker-container.open {\n  z-index: 1;\n  opacity: 1;\n}\n.picker-container.open .picker-wrapper {\n  transform: translate3d(0, 0, 0);\n  -webkit-transform: translate3d(0, 0, 0);\n}\n.picker-container .picker-wrapper {\n  position: fixed;\n  width: 100%;\n  z-index: 1;\n  bottom: 0;\n  left: 0;\n  transition: transform 0.3s linear;\n  -webkit-transition: -webkit-transform 0.3s linear;\n  transform: translate3d(0, 250px, 0);\n  -webkit-transform: translate3d(0, 250px, 0);\n}\n.picker-container .picker-wrapper .picker-action {\n  box-sizing: border-box;\n  background-color: #fff;\n  padding: 5px 10px;\n  box-shadow: 0 -1px 3px 1px #ddd;\n  border-bottom: 1px solid #e5e5e5;\n}\n.picker-container .picker-wrapper .picker-action .btn {\n  display: inline-block;\n  outline: none;\n  line-height: 1.42;\n  padding: 6px 12px;\n  font-size: 16px;\n  font-weight: normal;\n  text-align: center;\n  vertical-align: middle;\n  cursor: pointer;\n  color: #316ccb;\n  text-decoration: none;\n  white-space: nowrap;\n}\n.picker-container .picker-wrapper .picker-action .btn.btn-confirm {\n  float: right;\n}\n.m-picker,\n.m-picker * {\n  box-sizing: border-box;\n}\n.m-picker {\n  height: 200px;\n  background-color: #fff;\n}\n.m-picker .m-picker-inner {\n  position: relative;\n  height: 100%;\n  width: 100%;\n  -webkit-mask-box-image: -webkit-linear-gradient(bottom, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent);\n  -webkit-mask-box-image: linear-gradient(top, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent);\n}\n.m-picker .m-picker-inner .m-picker-list,\n.m-picker .m-picker-inner .m-picker-rule {\n  z-index: 1;\n  position: absolute;\n  top: 50%;\n  margin-top: -18px;\n  width: 100%;\n  list-style: none;\n  padding: 0;\n  line-height: 36px;\n  height: 36px;\n}\n.m-picker .m-picker-inner .m-picker-rule {\n  z-index: 2;\n  border-top: 1px solid rgba(0,0,0,0.1);\n  border-bottom: 1px solid rgba(0,0,0,0.1);\n}\n.m-picker .m-picker-inner .m-picker-list {\n  transform-style: preserve-3d;\n  -webkit-transform-style: preserve-3d;\n}\n.m-picker .m-picker-inner .m-picker-list li {\n  display: inline-block;\n  position: absolute;\n  width: 100%;\n  text-align: center;\n  font-size: 16px;\n  font-family: \"Helvetica Neue\", \"Helvetica\", \"Arial\", \"sans-serif\";\n  color: #959595;\n/* 超出的部分省略 */\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n/* 元素不面向屏幕时是否可见 */\n  backface-visibility: hidden;\n  -webkit-backface-visibility: hidden;\n}\n.m-picker .m-picker-inner .m-picker-list li.highlight {\n  color: #353535;\n  font-weight: bold;\n}\n", ""]);
-	
-	// exports
-
-
-/***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
 	//触摸事件处理
-	var Event = __webpack_require__(10);
-	var domEventHelper = __webpack_require__(11);
+	var Event = __webpack_require__(9);
+	var domEventHelper = __webpack_require__(10);
 	
 	function Touch(el) {
 	    Event.call(this);
@@ -8353,7 +8264,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = Touch;
 
 /***/ },
-/* 10 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	(function () {
@@ -8530,7 +8441,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	})();
 
 /***/ },
-/* 11 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	(function () {
@@ -8594,14 +8505,217 @@ return /******/ (function(modules) { // webpackBootstrap
 	})();
 
 /***/ },
+/* 11 */
+/***/ function(module, exports) {
+
+	module.exports = "<div v-touch:tap=\"cancel\" class=\"picker-container\" :class=\"{'open':open}\">\n  <div class=\"picker-wrapper\" v-touch:tap.stop>\n    <div class=\"picker-action\">\n      <span class=\"picker-btn\" v-touch:tap=\"cancel\">取消</span>\n      <span class=\"picker-btn picker-btn-confirm\" v-touch:tap=\"choose\">确定</span>\n    </div>\n    <slot></slot>\n    <div :style=\"style\" v-for=\"(item, index) in datas\" :key=\"index\">\n      <wag_picker_cpt :list=\"datas[index]\" @picker=\"picker\" :alias=\"index\" :cur-idx=\"curIdxs[index]\" :label=\"label\"></wag_picker_cpt>\n    </div>\n\n  </div>\n</div>";
+
+/***/ },
 /* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var $ = module.exports = __webpack_require__(13);
-	$.animate = __webpack_require__(14);
+	'use strict';
+	
+	var Touch = __webpack_require__(8);
+	var quart = __webpack_require__(13).quart;
+	
+	module.exports = {
+	    template: __webpack_require__(16),
+	    data: function data() {
+	        return {
+	            distinct: 0,
+	            speed: 0.5,
+	            curIndex: 0,
+	            threshold: 20,
+	            animatePause: true
+	        };
+	    },
+	
+	    props: {
+	        alias: [String, Number],
+	        list: {
+	            type: Array,
+	            required: true
+	        },
+	        label: {
+	            type: String,
+	            required: false,
+	            default: 'label'
+	        },
+	        curIdx: {
+	            type: Number,
+	            required: false,
+	            default: 0
+	        }
+	    },
+	    watch: {
+	        list: function list() {
+	            this.curIndex = 0;
+	            this.$nextTick(this.reload);
+	        },
+	        curIdx: function curIdx(val, oval) {
+	            this.curIndex = val;
+	            this.distinct = val * this.threshold;
+	            //当下标变化时,自动滚动到指定位置
+	            if (this.$list) {
+	                this.$list[oval].classList.remove('highlight');
+	                this.$list[val].classList.add('highlight');
+	            }
+	            if (this.$container) {
+	                this.$container.style.webkitTransform = 'rotateX(' + this.distinct + 'deg)';
+	            }
+	        }
+	    },
+	    computed: {
+	        maxVal: function maxVal() {
+	            return (this.list.length - 1) * this.threshold;
+	        }
+	    },
+	    methods: {
+	        move: function move(res) {
+	            var distinct = this.distinct;
+	            distinct += res.yrange * this.speed;
+	            this.distinct = this.internalCal(distinct);
+	        },
+	        end: function end() {
+	            var distinct = this.distinct;
+	            this.distinct = this.internalCal(distinct, true);
+	            this.$container.style.webkitTransition = '100ms ease-out';
+	            this.$emit('picker', JSON.parse(JSON.stringify(this.list[this.curIndex])), this.curIndex, this.alias);
+	        },
+	        internalCal: function internalCal(distinct, isEnd) {
+	            var threshold = this.threshold;
+	            var baseNum = isEnd ? -0 : threshold * 2;
+	            if (distinct > this.maxVal + baseNum) {
+	                distinct = this.maxVal + baseNum;
+	            }
+	            if (distinct < -baseNum) {
+	                distinct = -baseNum;
+	            }
+	
+	            var base = parseInt(distinct / threshold);
+	            var min = threshold * base;
+	            var max = min + threshold;
+	            var interval = max;
+	            if (distinct - min <= max - distinct) {
+	                interval = min;
+	            }
+	            distinct = isEnd ? interval : distinct;
+	            if (distinct >= 0 && distinct <= this.maxVal) {
+	                //选中的下表
+	                var idx = interval / threshold;
+	                this.$list[this.curIndex].classList.remove('highlight');
+	                this.$list[idx].classList.add('highlight');
+	                this.curIndex = idx;
+	            }
+	
+	            this.$container.style.webkitTransform = 'rotateX(' + distinct + 'deg)';
+	            this.showCal();
+	            return distinct;
+	        },
+	        showCal: function showCal() {
+	            //小于13全部显示
+	            //if (this.list.length <= 13) return;
+	            var min = this.curIndex - 5;
+	            var max = this.curIndex + 5;
+	            for (var i = 0, len = this.list.length; i < len; i++) {
+	                this.$list[i].style.visibility = i >= min && i <= max ? 'visible' : 'hidden';
+	            }
+	        },
+	        startInertiaScroll: function startInertiaScroll(res) {
+	            var _this = this;
+	
+	            //缓动
+	            var v = (res.y1 - res.y2) / res.spend;
+	            var duration = Math.abs(v / 0.0006); //速度减到0
+	            var dist = v * duration / 2; //最后执行的距离
+	            var _distinct = this.distinct;
+	            var minVal = -this.threshold * 2;
+	            var maxVal = this.maxVal + this.threshold * 2;
+	            var index = 0,
+	                r = 0;
+	            duration /= 5;
+	            var _inertiaMove = function _inertiaMove() {
+	                if (_this.animatePause) {
+	                    _this.distinct = _distinct;
+	                    return;
+	                }
+	                r = quart.easeOut(index++, _this.distinct, dist, duration);
+	                _distinct = _this.internalCal(r);
+	                if (index < duration && r >= minVal && r <= maxVal) {
+	                    requestAnimationFrame(_inertiaMove);
+	                } else {
+	                    _this.animatePause = true;
+	                    _this.distinct = _distinct;
+	                    _this.end();
+	                }
+	            };
+	            _inertiaMove();
+	        },
+	        reload: function reload() {
+	            var _this2 = this;
+	
+	            //当数据变化时,重新加载数据
+	            this.$container = this.$el.querySelector('.m-picker-list');
+	            this.$list = this.$container.querySelectorAll('li');
+	            this.$list[this.curIndex].classList.add('highlight');
+	            this.distinct = this.curIndex * this.threshold;
+	            this.showCal();
+	            this.$container.style.webkitTransform = 'rotateX(' + this.distinct + 'deg)';
+	            this.$container.addEventListener("webkitTransitionEnd", function () {
+	                _this2.$container.style.webkitTransition = null;
+	            });
+	        }
+	    },
+	    mounted: function mounted() {
+	        var _this3 = this;
+	
+	        this.$nextTick(function () {
+	            _this3.$options.ready.call(_this3);
+	        });
+	    },
+	    ready: function ready() {
+	        var _this4 = this;
+	
+	        this.curIndex = this.curIdx;
+	        if (this.list.length > 0) {
+	            this.reload();
+	        }
+	
+	        var touch = new Touch(this.$el);
+	        touch.start();
+	        touch.on('touch:start', function (res) {
+	            //暂停执行缓动
+	            _this4.animatePause = true;
+	            res.e.preventDefault();
+	        });
+	
+	        touch.on('touch:move', function (res) {
+	            res.e.preventDefault();
+	            _this4.move(res);
+	        });
+	
+	        touch.on('touch:end', function (res) {
+	            res.e.preventDefault();
+	            if (Math.abs(res.y1 - res.y2) < _this4.threshold * 2) {
+	                _this4.end();
+	            } else {
+	                _this4.animatePause = false;
+	                _this4.startInertiaScroll(res);
+	            }
+	        });
+	    }
+	};
 
 /***/ },
 /* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var $ = module.exports = __webpack_require__(14);
+	$.animate = __webpack_require__(15);
+
+/***/ },
+/* 14 */
 /***/ function(module, exports) {
 
 	/*
@@ -8798,7 +8912,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = Tween;
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	(function () {
@@ -8828,88 +8942,50 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Touch = __webpack_require__(9);
-	
-	var app = module.exports = {};
-	app.install = function (Vue, options) {
-	
-	    options = options || {};
-	    var longTapTime = options.longTapTime || 350;
-	
-	    Vue.directive('touch', {
-	        bind: function (el, binding, vnode) {
-	            var touch = el.touch = new Touch(el);
-	            var longTapTimeout = null;
-	            var handler = function (res) {
-	                var e = res.e;
-	                if (typeof binding.value === 'function') {
-	                    var _handler = function () {
-	                        if (binding.modifiers.self) {
-	                            if (e.target === e.currentTarget) {
-	                                binding.value(e);
-	                            }
-	                        } else {
-	                            binding.value(e);
-	                        }
-	                    }
-	
-	                    switch (binding.arg) {
-	                        case 'tap':
-	                            if (Math.abs(res.x1 - res.x2) < 30 && Math.abs(res.y1 - res.y2) < 30) {
-	                                _handler();
-	                            }
-	                            break;
-	                        case 'longtap':
-	                            _handler();
-	                            break;
-	                    }
-	                }
-	            };
-	
-	            var modify = function (e) {
-	                if (binding.modifiers.stop) {
-	                    e.stopPropagation();
-	                }
-	                if (binding.modifiers.prevent) {
-	                    e.preventDefault();
-	                }
-	            }
-	
-	            touch.on('touch:start', function (res) {
-	                modify(res.e);
-	                longTapTimeout = setTimeout(function () {
-	                    handler(res);
-	                }, longTapTime);
-	            });
-	
-	            touch.on('touch:move', function () {
-	                clearTimeout(longTapTimeout);
-	            });
-	
-	            touch.on('touch:end', function (res) {
-	                clearTimeout(longTapTimeout);
-	                modify(res.e);
-	                handler(res);
-	            });
-	
-	            touch.start();
-	        },
-	        unbind: function (el) {
-	            //删除dom监听事件
-	            el.touch._remove();
-	            el.touch = null;
-	        }
-	    });
-	}
-
-/***/ },
 /* 16 */
 /***/ function(module, exports) {
 
-	module.exports = "<div v-touch:tap=\"cancel\" class=\"picker-container\" :class=\"{'open':open}\">\n  <div class=\"picker-wrapper\" v-touch:tap.stop>\n    <div class=\"picker-action\">\n      <span class=\"btn btn-cancle\" v-touch:tap=\"cancel\">取消</span>\n      <span class=\"btn btn-confirm\" v-touch:tap=\"choose\">确定</span>\n    </div>\n    <div class=\"m-picker\">\n      <div class=\"m-picker-inner\">\n        <div class=\"m-picker-rule\"></div>\n        <ul class=\"m-picker-list\">\n          <li v-for=\"(item, index) of list\" :key=\"index\"\n              :style=\"{transform: 'rotateX(' + (-threshold * index) +'deg) translateZ(90px)'}\">{{item[label]}}\n          </li>\n        </ul>\n      </div>\n    </div>\n  </div>\n</div>";
+	module.exports = "<div class=\"m-picker\">\n  <div class=\"m-picker-inner\">\n    <div class=\"m-picker-rule\"></div>\n    <ul class=\"m-picker-list\">\n      <li v-for=\"(item, index) of list\" :key=\"index\"\n          :style=\"{transform: 'rotateX(' + (-threshold * index) +'deg) translateZ(90px)'}\">{{item[label]}}\n      </li>\n    </ul>\n  </div>\n</div>";
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+	
+	// load the styles
+	var content = __webpack_require__(18);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(4)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../node_modules/css-loader/index.js!./style.css", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js!./style.css");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(3)();
+	// imports
+	
+	
+	// module
+	exports.push([module.id, "/**\n   transform\n       1: transform的值有先后顺序,如rotateX(40deg) translateZ(60px);表示先在X轴旋转40度,再在Z轴上移动60px\n           如果translateZ(60px) rotateX(40deg);表示先在Z轴上移动60px,再在X轴旋转40度\n      2: transform-origin要和transform一起使用才有效\n*/\n.picker-container {\n  position: fixed;\n  top: 0;\n  left: 0;\n  z-index: -1;\n  width: 100%;\n  height: 100%;\n  background-color: rgba(0,0,0,0.4);\n  -webkit-transition-duration: opacity z-index;\n  transition-duration: opacity z-index;\n  -webkit-transition-duration: 400ms;\n  transition-duration: 400ms;\n  opacity: 0;\n}\n.picker-container.open {\n  z-index: 1;\n  opacity: 1;\n}\n.picker-container.open .picker-wrapper {\n  transform: translate3d(0, 0, 0);\n  -webkit-transform: translate3d(0, 0, 0);\n}\n.picker-container .picker-wrapper {\n  position: fixed;\n  width: 100%;\n  z-index: 1;\n  bottom: 0;\n  left: 0;\n  transition: transform 0.3s linear;\n  -webkit-transition: -webkit-transform 0.3s linear;\n  transform: translate3d(0, 250px, 0);\n  -webkit-transform: translate3d(0, 250px, 0);\n}\n.picker-container .picker-wrapper .picker-action {\n  box-sizing: border-box;\n  background-color: #fff;\n  padding: 5px 10px;\n  box-shadow: 0 -1px 3px 1px #ddd;\n  border-bottom: 1px solid #e5e5e5;\n}\n.picker-container .picker-wrapper .picker-action .picker-btn {\n  display: inline-block;\n  outline: none;\n  line-height: 1.42;\n  padding: 6px 12px;\n  font-size: 16px;\n  font-weight: normal;\n  text-align: center;\n  vertical-align: middle;\n  cursor: pointer;\n  color: #316ccb;\n  text-decoration: none;\n  white-space: nowrap;\n}\n.picker-container .picker-wrapper .picker-action .picker-btn.picker-btn-confirm {\n  float: right;\n}\n.m-picker,\n.m-picker * {\n  box-sizing: border-box;\n}\n.m-picker {\n  height: 200px;\n  background-color: #fff;\n}\n.m-picker .m-picker-inner {\n  position: relative;\n  height: 100%;\n  width: 100%;\n  -webkit-mask-box-image: -webkit-linear-gradient(bottom, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent);\n  -webkit-mask-box-image: linear-gradient(top, transparent, transparent 5%, #fff 20%, #fff 80%, transparent 95%, transparent);\n}\n.m-picker .m-picker-inner .m-picker-list,\n.m-picker .m-picker-inner .m-picker-rule {\n  z-index: 1;\n  position: absolute;\n  top: 50%;\n  margin-top: -18px;\n  width: 100%;\n  list-style: none;\n  padding: 0;\n  line-height: 36px;\n  height: 36px;\n}\n.m-picker .m-picker-inner .m-picker-rule {\n  z-index: 2;\n  border-top: 1px solid rgba(0,0,0,0.1);\n  border-bottom: 1px solid rgba(0,0,0,0.1);\n}\n.m-picker .m-picker-inner .m-picker-list {\n  transform-style: preserve-3d;\n  -webkit-transform-style: preserve-3d;\n}\n.m-picker .m-picker-inner .m-picker-list li {\n  display: inline-block;\n  position: absolute;\n  width: 100%;\n  text-align: center;\n  font-size: 16px;\n  font-family: \"Helvetica Neue\", \"Helvetica\", \"Arial\", \"sans-serif\";\n  color: #959595;\n/* 超出的部分省略 */\n  text-overflow: ellipsis;\n  overflow: hidden;\n  white-space: nowrap;\n/* 元素不面向屏幕时是否可见 */\n  backface-visibility: hidden;\n  -webkit-backface-visibility: hidden;\n}\n.m-picker .m-picker-inner .m-picker-list li.highlight {\n  color: #353535;\n  font-weight: bold;\n}\n", ""]);
+	
+	// exports
+
 
 /***/ }
 /******/ ])

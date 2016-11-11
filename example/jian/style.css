@@ -1,12 +1,26 @@
+
+body {
+  margin: 0;
+  background: #ddd;
+}
+
 .choose-result {
   text-align: center;
   position: absolute;
   top: 100px;
-  width: 100%;
+  width: 80%;
+  background-color: #fff;
 }
 
 .choose-result .choose-result-cnt {
   margin-top: 30px;
+}
+
+
+input {
+  border: 1px solid #5e5e5e;
+  height: 30px;
+  width: 200px;
 }
 
 
