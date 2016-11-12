@@ -48,7 +48,7 @@ module.exports = {
             if (!(this.list[0] instanceof Array)) {
                 list = [this.list];
             }
-            var _this= this;
+            var _this = this;
             return list.map(function (arr) {
                 return arr.map(function (item) {
                     return typeof item === 'string' ? item : item[_this.label];
@@ -82,7 +82,7 @@ module.exports = {
         },
         picker(index, alias){
             this.cache[alias] = index;
-            this.change(index, alias);
+            this.change(alias, index);
         }
     },
     mounted() {
