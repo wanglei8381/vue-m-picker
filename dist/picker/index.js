@@ -15,28 +15,7 @@ module.exports = {
         };
     },
 
-    props: {
-        alias: [String, Number],
-        list: {
-            type: Array,
-            required: true
-        },
-        label: {
-            type: String,
-            required: false,
-            default: 'label'
-        },
-        value: {
-            type: String,
-            required: false,
-            default: 'value'
-        },
-        curIdx: {
-            type: Number,
-            required: false,
-            default: 0
-        }
-    },
+    props: ['alias', 'list', 'label', 'curIdx'],
     watch: {
         list: function list() {
             this.curIndex = 0;
@@ -70,7 +49,7 @@ module.exports = {
             var distinct = this.distinct;
             this.distinct = this.internalCal(distinct, true);
             this.$container.style.webkitTransition = '100ms ease-out';
-            this.$emit('picker', JSON.parse(JSON.stringify(this.list[this.curIndex])), this.curIndex, this.alias);
+            this.$emit('picker', this.curIndex, this.alias);
         },
         internalCal: function internalCal(distinct, isEnd) {
             var threshold = this.threshold;

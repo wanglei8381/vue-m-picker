@@ -6,63 +6,56 @@ npm install vue-m-picker
 ##Use
 <pre>
 var Vue = require('vue');
+//声明全局或局部组件
 Vue.component('picker', require('vue-m-picker'));
-&lt;picker :list="list" :confirm="confirm" :change="change">
-input type="text" placeholder="触发条件">
+
+//页面引入方式
+&lt;picker :list="list" label="label" :cur-idxs="curIdxs" :cancel="cancel" :confirm="confirm" :change="change">
+//触发条件,可以是input,按钮或其他任何元素
+&lt;input type="text" placeholder="触发条件">
 &lt;/picker>
+</pre>
 
-//通过props传值
-props: {
-    list: {//显示的数组,数组中对象格式是{label:'显示的内容',value:'值'}
-        type: Array,
-        required: true
-    },
-    label: {//label的别名,如果是对象通过label来展示显示文字
-        type: String,
-        required: false,
-        default: 'label'
-    },
-    curIdxs: {//当前选中的下标
-        type: Number,
-        required: false,
-        default: [0]
-    },
-    cancel: {//点击取消触发改函数
-        type: Function,
-        required: false,
-        default: function () {
-            return function () {
-            };
-        }
-    },
-    confirm: {//点击确定按钮触发改函数
-         type: Function,
-         required: false,
-         default: function () {
-             return function () {
-             };
-         }
-    },
-    change: {//每次值改变调用改函数
-       type: Function,
-       required: false,
-       default: function () {
-           return function () {
-           };
-       }
-    }
-}
-
-list的普通用法
-list=['A','B','C']
-或对象
-list=[{label:'A',other:'xx'},{'B',other:'xx'},{'C',other:'xx'}]
-支持多级联动
-list=[
-    [{id:1,name:'A'},{id:2,name:'B'},{id:3,name:'C'}],
-    [{id:4,name:'D',fid:1},{id:5,name:'D',fid:2},{id:6,name:'D',fid:3}]
-    ]
-第一个数组是第一级 ,第二个数组是第二级,插件并没有实现第二级随第一级联动,
-需要手动修改,在每次改变数据时,会调用change函数,在change函数中会传入两个参数,
-第一个参数是第几级(从0开始),第二个参数表示第几级的选中的下标
+###Params
+####list
+<pre>
+Type : Array
+简单使用  list=['A','B','C']
+支持使用对象  list=[{name:'A',other:'xx'},{name:'B',other:'xx'}]
+支持多级联动   list=[
+             [{id:1,name:'A'},{id:2,name:'B'},{id:3,name:'C'}],
+             [{id:4,name:'D',fid:1},{id:5,name:'D',fid:2},{id:6,name:'D',fid:3}]
+             ]
+</pre>
+注意:如果使用多级联动,第一个数组是第一级 ,第二个数组是第二级,插件并没有实现第二级随第一级联动。
+如果想实现多级联动,可使用change方法自行绑定。
+####label
+<pre>
+Type : String
+如果list中的item是对象,可使用label来指定显示内容,如label="name"
+</pre>
+####cur-idxs
+<pre>
+Type : Array
+Default : [0]
+初始指定的下标,多级可采用 [0,0,...] 形式指定
+</pre>
+####cancel
+<pre>
+Type : Function
+点击取消按钮触发
+</pre>
+####confirm
+<pre>
+Type : Function
+点击确定按钮触发
+函数返回值为每一级选中项的下标(index1,index2,...),下标从0开始
+</pre>
+####change
+<pre>
+Type : Function
+每一级的值更改时触发
+函数返回值有两项(itemIndex,index),均从0开始
+itemIndex: 第几级
+index: 选中项的下标
 </pre>

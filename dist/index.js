@@ -2,8 +2,20 @@
 
 require('vue').use(require('vue-m-touch'));
 require('./style.css');
+
+var defaultFnObj = {
+    type: Function,
+    required: false,
+    default: function _default() {
+        return function () {};
+    }
+};
 module.exports = {
     template: require('./template.html'),
+    data: function data() {
+        return { open: false };
+    },
+
     props: {
         list: {
             type: Array,
@@ -13,11 +25,6 @@ module.exports = {
             type: String,
             required: false,
             default: 'label'
-        },
-        value: {
-            type: String,
-            required: false,
-            default: 'value'
         },
         curIdxs: {
             type: Array,
@@ -33,25 +40,9 @@ module.exports = {
                 return [0];
             }
         },
-        open: {
-            type: Boolean,
-            required: true
-        },
-        cancel: {
-            type: Function,
-            required: true
-        },
-        confirm: {
-            type: Function,
-            required: true
-        },
-        change: {
-            type: Function,
-            required: false,
-            default: function _default() {
-                return function () {};
-            }
-        }
+        cancel: defaultFnObj,
+        confirm: defaultFnObj,
+        change: defaultFnObj
     },
     computed: {
         datas: function datas() {
@@ -59,7 +50,12 @@ module.exports = {
             if (!(this.list[0] instanceof Array)) {
                 list = [this.list];
             }
-            return list;
+            var _this = this;
+            return list.map(function (arr) {
+                return arr.map(function (item) {
+                    return typeof item === 'string' ? item : item[_this.label];
+                });
+            });
         },
         style: function style() {
             var length = this.datas.length;
@@ -69,17 +65,33 @@ module.exports = {
             };
         }
     },
+    watch: {
+        curIdxs: function curIdxs(val) {
+            this.cache = val;
+        }
+    },
     methods: {
+        openWin: function openWin() {
+            this.open = true;
+        },
+        close: function close() {
+            this.open = false;
+            this.cancel();
+        },
         choose: function choose() {
+            this.open = false;
             this.confirm.apply(this, this.cache);
         },
-        picker: function picker(item, index, alias) {
-            this.cache[alias] = item;
-            this.change(item, index, alias);
+        picker: function picker(index, alias) {
+            this.cache[alias] = index;
+            this.change(alias, index);
         }
     },
     mounted: function mounted() {
-        this.cache = [];
+
+        this.$nextTick(function () {
+            this.cache = this.curIdxs;
+        });
     },
 
     components: {
