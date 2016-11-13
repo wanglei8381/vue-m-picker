@@ -15,10 +15,9 @@ module.exports = {
         };
     },
 
-    props: ['alias', 'list', 'label', 'curIdx'],
+    props: ['alias', 'list', 'curIdx', 'label'],
     watch: {
         list: function list() {
-            this.curIndex = 0;
             this.$nextTick(this.reload);
         },
         curIdx: function curIdx(val, oval) {
@@ -26,8 +25,7 @@ module.exports = {
             this.distinct = val * this.threshold;
             //当下标变化时,自动滚动到指定位置
             if (this.$list) {
-                this.$list[oval].classList.remove('highlight');
-                this.$list[val].classList.add('highlight');
+                this.highlight(oval, val);
             }
             if (this.$container) {
                 this.$container.style.webkitTransform = 'rotateX(' + this.distinct + 'deg)';
@@ -72,8 +70,7 @@ module.exports = {
             if (distinct >= 0 && distinct <= this.maxVal) {
                 //选中的下表
                 var idx = interval / threshold;
-                this.$list[this.curIndex].classList.remove('highlight');
-                this.$list[idx].classList.add('highlight');
+                this.highlight(this.curIndex, idx);
                 this.curIndex = idx;
             }
 
@@ -120,13 +117,23 @@ module.exports = {
             };
             _inertiaMove();
         },
+        highlight: function highlight(pidx, idx) {
+            var len = this.$list.length;
+            if (pidx < len) {
+                this.$list[pidx].classList.remove('highlight');
+            }
+            if (idx < len) {
+                this.$list[idx].classList.add('highlight');
+            }
+        },
         reload: function reload() {
             var _this2 = this;
 
             //当数据变化时,重新加载数据
             this.$container = this.$el.querySelector('.m-picker-list');
             this.$list = this.$container.querySelectorAll('li');
-            this.$list[this.curIndex].classList.add('highlight');
+            this.highlight(this.curIndex, 0);
+            this.curIndex = 0;
             this.distinct = this.curIndex * this.threshold;
             this.showCal();
             this.$container.style.webkitTransform = 'rotateX(' + this.distinct + 'deg)';
@@ -145,7 +152,7 @@ module.exports = {
     ready: function ready() {
         var _this4 = this;
 
-        this.curIndex = this.curIdx;
+        this.curIndex = parseInt(this.curIdx);
         if (this.list.length > 0) {
             this.reload();
         }

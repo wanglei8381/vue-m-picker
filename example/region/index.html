@@ -11,13 +11,10 @@
   <title>简单例子</title>
 </head>
 <body>
-<div id="mod-container">
+<div id="container">
 
-  <picker :list="list" :confirm="confirm">
-    <input v-model="name" readonly type="text" placeholder="选择">
-    <div slot="header" class="picker-header">
-      <div class="picker-title">名称</div>
-    </div>
+  <picker :list="list" label="name" :confirm="confirm" :change="change">
+    <input type="text" placeholder="选择">
   </picker>
 
 </div>

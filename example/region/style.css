@@ -1,7 +1,7 @@
 
 body {
   margin: 0;
-  background: #fff;
+  background: #ddd;
 }
 
 .choose-result {
@@ -31,6 +31,8 @@ input {
 }
 
 .picker-header .picker-title {
+  float: left;
+  width: 50%;
   text-align: center;
   line-height: 40px;
   color: #959595;

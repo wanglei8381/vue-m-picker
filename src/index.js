@@ -16,7 +16,7 @@ module.exports = {
     },
     props: {
         list: {
-            type: Array,
+            type: [Object, Array],
             required: true
         },
         label: {
@@ -35,7 +35,7 @@ module.exports = {
                     }
                     return arr;
                 }
-                return [0];
+                return [0, 0, 0];
             }
         },
         cancel: defaultFnObj,
@@ -48,15 +48,14 @@ module.exports = {
             if (!(this.list[0] instanceof Array)) {
                 list = [this.list];
             }
-            var _this = this;
-            return list.map(function (arr) {
-                return arr.map(function (item) {
-                    return typeof item === 'string' ? item : item[_this.label];
-                });
+            var obj = {};
+            list.forEach(function (arr, index) {
+                obj[index] = arr;
             });
+            return obj;
         },
         style(){
-            var length = this.datas.length;
+            var length = Object.keys(this.datas).length;
             return {
                 width: 100 / length + '%',
                 float: 'left'
@@ -64,9 +63,9 @@ module.exports = {
         }
     },
     watch: {
-        curIdxs(val){
-            this.cache = val;
-        }
+        // curIdxs(val, oval){
+        //     this.cache = val;
+        // }
     },
     methods: {
         openWin(){
@@ -81,8 +80,8 @@ module.exports = {
             this.confirm.apply(this, this.cache);
         },
         picker(index, alias){
-            this.cache[alias] = index;
-            this.change(alias, index);
+            this.cache[parseInt(alias)] = index;
+            this.change(parseInt(alias), index);
         }
     },
     mounted() {

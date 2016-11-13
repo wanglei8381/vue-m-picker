@@ -1,5 +1,5 @@
 <div>
-  <div class="open-wrapper"  v-touch:tap="openWin">
+  <div class="open-wrapper" v-touch:tap="openWin">
     <slot></slot>
   </div>
   <div v-touch:tap="close" class="picker-container" :class="{'open':open}">
@@ -10,8 +10,7 @@
       </div>
       <slot name="header"></slot>
       <div :style="style" v-for="(item, index) in datas" :key="index">
-        <wag_picker_cpt :list="datas[index]" @picker="picker" :alias="index" :cur-idx="curIdxs[index]"
-                        :label="label"></wag_picker_cpt>
+        <wag_picker_cpt :list="item" @picker="picker" :alias="index" :label="label" :cur-idx="curIdxs[index]"></wag_picker_cpt>
       </div>
 
     </div>
