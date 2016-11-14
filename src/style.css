@@ -12,8 +12,8 @@
   width: 100%;
   height: 100%;
   background-color: rgba(0,0,0,0.4);
-  -webkit-transition-duration: opacity z-index;
-  transition-duration: opacity z-index;
+  -webkit-transition-property: opacity, z-index;
+  transition-property: opacity, z-index;
   -webkit-transition-duration: 400ms;
   transition-duration: 400ms;
   opacity: 0;
@@ -100,7 +100,7 @@
   transform-style: preserve-3d;
   -webkit-transform-style: preserve-3d;
 }
-.m-picker .m-picker-inner .m-picker-list li {
+.m-picker .m-picker-inner .m-picker-list .m-picker-item {
   display: inline-block;
   position: absolute;
   width: 100%;
@@ -116,7 +116,7 @@
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
-.m-picker .m-picker-inner .m-picker-list li.highlight {
+.m-picker .m-picker-inner .m-picker-list .m-picker-item.highlight {
   color: #353535;
   font-weight: bold;
 }

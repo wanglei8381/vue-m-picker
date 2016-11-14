@@ -2,7 +2,7 @@
   <div class="m-picker-inner">
     <div class="m-picker-rule"></div>
     <ul class="m-picker-list">
-      <li v-for="(item, index) of list" :key="index"
+      <li class="m-picker-item" v-for="(item, index) of list" :key="index"
           :style="{transform: 'rotateX(' + (-threshold * index) +'deg) translateZ(90px)'}">{{typeof item === 'string' ? item : item[label]}}
       </li>
     </ul>
