@@ -5,8 +5,6 @@ var defaultFnObj = {
     type: Function,
     required: false,
     default: function () {
-        return function () {
-        };
     }
 };
 module.exports = {
