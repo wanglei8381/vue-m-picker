@@ -6,9 +6,7 @@ require('./style.css');
 var defaultFnObj = {
     type: Function,
     required: false,
-    default: function _default() {
-        return function () {};
-    }
+    default: function _default() {}
 };
 module.exports = {
     template: require('./template.html'),
@@ -68,6 +66,15 @@ module.exports = {
         // curIdxs(val, oval){
         //     this.cache = val;
         // }
+        datas: function datas(nobj, oobj) {
+            //主要修复在数据更改时,初始化的对应下表为0
+            var size = Object.keys(nobj).length;
+            for (var i = 0; i < size; i++) {
+                if (nobj[i] !== oobj[i]) {
+                    this.cache[i] = 0;
+                }
+            }
+        }
     },
     methods: {
         openWin: function openWin() {
@@ -87,7 +94,7 @@ module.exports = {
         }
     },
     mounted: function mounted() {
-
+        this.cache = [];
         this.$nextTick(function () {
             this.cache = this.curIdxs;
         });

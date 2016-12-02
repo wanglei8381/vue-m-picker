@@ -10,9 +10,11 @@
       </div>
       <slot name="header"></slot>
       <div :style="style" v-for="(item, index) in datas" :key="index">
-        <wag_picker_cpt :list="item" @picker="picker" :alias="index" :label="label" :cur-idx="curIdxs[index]"></wag_picker_cpt>
+        <wag_picker_cpt :list="item" @picker="picker" :alias="index" :label="label"
+                        :cur-idx="curIdxs[index]"></wag_picker_cpt>
       </div>
 
     </div>
   </div>
+  <div class="picker-mask" v-show="open"></div>
 </div>

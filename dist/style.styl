@@ -12,18 +12,10 @@
   z-index: -1;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.4);
-  -webkit-transition-property: opacity,z-index;
-  transition-property: opacity,z-index;
-  -webkit-transition-duration: 400ms;
-  transition-duration: 400ms;
-  opacity: 0;
-  text-align: left;
-
+  visibility hidden
   &.open {
-    z-index: 1;
-    opacity: 1;
-
+    z-index: 2;
+    visibility visible
     .picker-wrapper {
       transform: translate3d(0, 0, 0);
       -webkit-transform: translate3d(0, 0, 0);
@@ -136,4 +128,14 @@
 
 .open-wrapper {
   display inline-block
+}
+
+.picker-mask {
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
 }

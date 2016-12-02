@@ -64,6 +64,15 @@ module.exports = {
         // curIdxs(val, oval){
         //     this.cache = val;
         // }
+        datas(nobj, oobj) {
+            //主要修复在数据更改时,初始化的对应下表为0
+            let size = Object.keys(nobj).length;
+            for(let i = 0; i < size; i++) {
+                if(nobj[i] !== oobj[i]) {
+                    this.cache[i] = 0;
+                }
+            }
+        }
     },
     methods: {
         openWin(){
@@ -83,7 +92,7 @@ module.exports = {
         }
     },
     mounted() {
-
+        this.cache = [];
         this.$nextTick(function () {
             this.cache = this.curIdxs;
         });
