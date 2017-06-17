@@ -1,3 +1,4 @@
+/* eslint-disable */
 module.exports = [
     [
         {name: "\u5317\u4eac", code: "110000"},

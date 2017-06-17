@@ -1,4 +1,9 @@
-src/
-example/
-node_modules/
+example
+node_modules
+test
+.babelrc
+.editorconfig
+.eslintrc.json
 .gitignore
+.postcssrc.js
+wag.config.js
