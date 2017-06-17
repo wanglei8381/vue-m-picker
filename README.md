@@ -1,9 +1,9 @@
-#vue-m-picker
+# vue-m-picker
  <h5>基于vue的移动端选择工具</h5>
  <h6>v0.0.3版本以后支持Vue2.0</h6>
-##Install
+## Install
 npm install vue-m-picker
-##Use
+## Use
 <pre>
 var Vue = require('vue');
 //声明全局或局部组件
@@ -16,8 +16,8 @@ Vue.component('picker', require('vue-m-picker'));
 &lt;/picker>
 </pre>
 
-###Params
-####list
+### Params
+#### list
 <pre>
 Type : Array
 简单使用  list=['A','B','C']
@@ -34,24 +34,24 @@ Type : Array
 Type : String
 如果list中的item是对象,可使用label来指定显示内容,如label="name"
 </pre>
-####cur-idxs
+#### cur-idxs
 <pre>
 Type : Array
 Default : [0]
 初始指定的下标,多级可采用 [0,0,...] 形式指定
 </pre>
-####cancel
+#### cancel
 <pre>
 Type : Function
 点击取消按钮触发
 </pre>
-####confirm
+#### confirm
 <pre>
 Type : Function
 点击确定按钮触发
 函数返回值为每一级选中项的下标(index1,index2,...),下标从0开始
 </pre>
-####change
+#### change
 <pre>
 Type : Function
 每一级的值更改时触发
