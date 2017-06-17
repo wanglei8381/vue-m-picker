@@ -1,8 +1,10 @@
 # vue-m-picker
  <h5>基于vue的移动端选择工具</h5>
  <h6>v0.0.3版本以后支持Vue2.0</h6>
+ 
 ## Install
 npm install vue-m-picker
+
 ## Use
 <pre>
 var Vue = require('vue');
